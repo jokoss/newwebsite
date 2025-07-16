@@ -1,3 +1,6 @@
+# Render Blueprint API version
+version: 1
+
 services:
   # Web service for the full-stack application
   - type: web
