@@ -1,14 +1,13 @@
 [build]
-  base = "client"
-  command = "npm install && CI= npm run build && node netlify.js"
-  publish = "build"
+  command = "cd client && npm install && CI= npm run build && node netlify.js"
+  publish = "client/build"
   environment = { NODE_VERSION = "16", NETLIFY_USE_YARN = "false", CI = "false" }
 
 [[plugins]]
-  package = "../netlify-build-plugin.js"
+  package = "netlify-build-plugin.js"
 
 [functions]
-  directory = "../server"
+  directory = "server"
   node_bundler = "esbuild"
 
 [[functions]]
