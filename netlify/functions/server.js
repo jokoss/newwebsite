@@ -19,7 +19,7 @@ const app = express();
 // Configure CORS
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-netlify-domain.netlify.app', 'https://your-custom-domain.com']
+    ? true // Allow all origins in production for now
     : ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true,
   optionsSuccessStatus: 200
