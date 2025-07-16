@@ -14,6 +14,9 @@ const blogRoutes = require('./routes/blog.routes');
 // Ensure uploads directory exists
 require('./scripts/ensure-uploads-directory');
 
+// Debug client build path
+require('./scripts/debug-client-build');
+
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -33,7 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 app.use(express.static(process.env.NODE_ENV === 'production' 
-  ? 'client/build' 
+  ? '../client/build' 
   : '../client/build')); // Serve static files from the React app
 
 // Routes
@@ -55,7 +58,7 @@ app.get('/api', (req, res) => {
 app.get('*', (req, res) => {
   const path = require('path');
   const clientBuildPath = process.env.NODE_ENV === 'production'
-    ? path.resolve(__dirname, 'client/build/index.html')
+    ? path.resolve(__dirname, '../client/build/index.html')
     : path.resolve(__dirname, '../client/build/index.html');
   
   res.sendFile(clientBuildPath);
