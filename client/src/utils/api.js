@@ -3,9 +3,9 @@ import axios from 'axios';
 // Create axios instance with base URL
 const api = axios.create({
   baseURL: process.env.NODE_ENV === 'production' 
-    ? '/.netlify/functions/server/api' // In production, use Netlify Functions path
+    ? '/api' // In production, use the redirect path configured in netlify.toml
     : 'http://localhost:5000/api', // In development, use the local server
-  timeout: 10000,
+  timeout: 30000, // Increased timeout for serverless functions
   headers: {
     'Content-Type': 'application/json',
   }

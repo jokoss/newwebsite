@@ -9,8 +9,10 @@
     "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
     "install-server": "cd server && npm install",
     "install-client": "cd client && npm install",
-    "install": "npm run install-server && npm run install-client",
-    "heroku-postbuild": "npm run build"
+    "install-functions": "cd netlify/functions && npm install",
+    "install": "npm run install-server && npm run install-client && npm run install-functions",
+    "heroku-postbuild": "npm run build",
+    "netlify-build": "npm run install-client && cd client && npm run build"
   },
   "engines": {
     "node": ">=14.0.0"
