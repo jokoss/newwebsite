@@ -1,6 +1,7 @@
 # Simple Netlify configuration
 [build]
-  command = "cd client && npm install && npm run build"
+  base = "."
+  command = "npm install && cd client && npm install && npm run build"
   publish = "client/build"
 
 [[redirects]]
