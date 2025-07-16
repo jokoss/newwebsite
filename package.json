@@ -1,0 +1,22 @@
+{
+  "name": "analytical-testing-lab",
+  "version": "1.0.0",
+  "description": "Analytical Testing Laboratory Website",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "build": "cd client && npm install && npm run build",
+    "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install",
+    "install": "npm run install-server && npm run install-client",
+    "heroku-postbuild": "npm run build"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "cacheDirectories": ["client/node_modules", "server/node_modules"],
+  "dependencies": {
+    "concurrently": "^8.0.1"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\client",
+    "\\client\\build",
+    "\\client\\build\\images",
+    "\\client\\build\\static",
+    "\\client\\build\\static\\js",
+    "\\server",
+    "\\server\\migrations",
+    "\\server\\models",
+    "\\server\\routes"
+  ],
+  "SelectedNode": "\\client\\build\\static",
+  "PreviewInSolutionExplorer": false
+}
