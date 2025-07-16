@@ -19,13 +19,12 @@ services:
         - package.json
         - server/**
         - client/**
-    buildEnvironment:
-      # Required for building sqlite3 from source
-      - name: PYTHON
-        value: python3
-      - name: NODE_SQLITE3_BINARY_HOST_MIRROR
-        value: https://github.com/TryGhost/node-sqlite3/releases/download
     envVars:
+      # Required for building sqlite3 from source
+      - key: PYTHON
+        value: python3
+      - key: NODE_SQLITE3_BINARY_HOST_MIRROR
+        value: https://github.com/TryGhost/node-sqlite3/releases/download
       - key: NODE_ENV
         value: production
       - key: JWT_EXPIRES_IN
