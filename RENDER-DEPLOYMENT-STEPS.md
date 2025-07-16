@@ -2,6 +2,15 @@
 
 This guide will walk you through the process of deploying your Analytical Testing Laboratory application to Render using the Docker configuration we've set up.
 
+## Recent Fixes
+
+We've fixed the following issues in the render.yaml file:
+- Removed the `buildEnvironment` section which was causing an error in Render
+- Moved the SQLite3 build environment variables to the regular `envVars` section
+- Added the required `version: 1` field at the top of the file
+
+These changes should resolve the deployment errors you were experiencing.
+
 ## Prerequisites
 
 - Your code is pushed to GitHub (which you've already done)
