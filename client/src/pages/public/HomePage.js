@@ -99,7 +99,7 @@ const Hero = () => {
                   label="Trusted by 500+ Organizations" 
                   sx={{ 
                     mb: 3,
-                    background: 'rgba(11, 77, 131, 0.08)',
+                    background: '#FFFFFF',
                     color: theme.palette.primary.main,
                     fontWeight: 500,
                     backdropFilter: 'blur(10px)',
@@ -541,18 +541,7 @@ const CTASection = () => {
         py: { xs: 10, md: 12 }, 
         position: 'relative',
         overflow: 'hidden',
-        background: '#FFFFFF',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'url(https://images.unsplash.com/photo-1579165466741-7f35e4755183?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80) center/cover no-repeat',
-          opacity: 0.02,
-          zIndex: 1
-        }
+        background: '#FFFFFF'
       }}
     >
       {/* Decorative elements */}
@@ -626,12 +615,13 @@ const CTASection = () => {
                 component={RouterLink} 
                 to="/contact" 
                 sx={{ 
-                  background: theme.palette.primary.main,
-                  color: '#FFFFFF',
+                  background: '#FFFFFF',
+                  color: theme.palette.primary.main,
                   fontWeight: 500,
                   fontSize: '1rem',
+                  border: `1px solid ${theme.palette.primary.main}`,
                   '&:hover': {
-                    background: theme.palette.primary.dark,
+                    background: '#FFFFFF',
                     transform: 'translateY(-2px)',
                     boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
                   },
@@ -1162,13 +1152,14 @@ const BlogSection = () => {
                     <Chip 
                       label="Blog" 
                       size="small"
-                      color="primary"
                       sx={{ 
                         position: 'absolute', 
                         top: 16, 
                         left: 16,
                         fontWeight: 600,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                        bgcolor: '#FFFFFF',
+                        color: theme.palette.primary.main
                       }} 
                     />
                   </Box>
