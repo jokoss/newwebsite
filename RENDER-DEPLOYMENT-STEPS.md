@@ -8,6 +8,7 @@ We've fixed the following issues in the render.yaml file:
 - Removed the `buildEnvironment` section which was causing an error in Render
 - Moved the SQLite3 build environment variables to the regular `envVars` section
 - Added the required `version: 1` field at the top of the file
+- Removed the `startCommand` from render.yaml and moved it to the Dockerfile's CMD instruction (Docker runtime must not have startCommand in render.yaml)
 
 These changes should resolve the deployment errors you were experiencing.
 

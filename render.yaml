@@ -9,7 +9,6 @@ services:
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
     numInstances: 1
-    startCommand: bash render-setup.sh && node server/index.js
     disk:
       name: uploads
       mountPath: /var/data
