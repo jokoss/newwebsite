@@ -8,17 +8,38 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function(req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-  }
-});
+// Configure storage based on environment
+let storage;
+
+// In production, we would use cloud storage like AWS S3 or Cloudinary
+// For now, we'll use disk storage with a warning about Render's ephemeral filesystem
+if (process.env.NODE_ENV === 'production') {
+  console.warn('WARNING: Using local disk storage in production. Files will not persist between deployments on Render.');
+  console.warn('Consider implementing cloud storage (AWS S3, Cloudinary, etc.) for production use.');
+  
+  storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, uploadDir);
+    },
+    filename: function(req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const ext = path.extname(file.originalname);
+      cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+    }
+  });
+} else {
+  // Development storage
+  storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, uploadDir);
+    },
+    filename: function(req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const ext = path.extname(file.originalname);
+      cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+    }
+  });
+}
 
 // File filter
 const fileFilter = (req, file, cb) => {

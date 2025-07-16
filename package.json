@@ -26,6 +26,8 @@
     "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.2.0",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.30.0",
     "slugify": "^1.6.6",
     "sqlite3": "^5.1.7"

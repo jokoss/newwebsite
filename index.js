@@ -11,16 +11,30 @@ const certificationRoutes = require('./routes/certification.routes');
 const partnerRoutes = require('./routes/partner.routes');
 const blogRoutes = require('./routes/blog.routes');
 
+// Ensure uploads directory exists
+require('./scripts/ensure-uploads-directory');
+
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Configure CORS
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? process.env.FRONTEND_URL || 'https://your-app-name.onrender.com'
+    : 'http://localhost:3000',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
-app.use(express.static('../client/build')); // Serve static files from the React app
+app.use(express.static(process.env.NODE_ENV === 'production' 
+  ? 'client/build' 
+  : '../client/build')); // Serve static files from the React app
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -39,7 +53,12 @@ app.get('/api', (req, res) => {
 
 // Serve React app for all other routes
 app.get('*', (req, res) => {
-  res.sendFile(require('path').resolve(__dirname, '../client/build/index.html'));
+  const path = require('path');
+  const clientBuildPath = process.env.NODE_ENV === 'production'
+    ? path.resolve(__dirname, 'client/build/index.html')
+    : path.resolve(__dirname, '../client/build/index.html');
+  
+  res.sendFile(clientBuildPath);
 });
 
 // Error handling middleware

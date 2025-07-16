@@ -38,4 +38,11 @@ try {
   process.exit(1);
 }
 
+// Production warning
+if (process.env.NODE_ENV === 'production') {
+  console.warn('WARNING: Running in production environment.');
+  console.warn('Render.com uses an ephemeral filesystem. Files uploaded to this directory will not persist between deployments.');
+  console.warn('Consider implementing a cloud storage solution (AWS S3, Cloudinary, etc.) for production use.');
+}
+
 console.log('Uploads directory check completed successfully.');
