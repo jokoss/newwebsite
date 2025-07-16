@@ -2,9 +2,15 @@ services:
   # Web service for the full-stack application
   - type: web
     name: analytical-lab
-    env: node
-    buildCommand: npm install --no-package-lock && cd client && npm install --no-package-lock && npm run build && mkdir -p ../server/client/build && cp -r build/* ../server/client/build/ && cd .. && ls -la server/client/build
-    startCommand: npm start
+    env: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    numInstances: 1
+    startCommand: bash render-setup.sh && node server/index.js
+    disk:
+      name: uploads
+      mountPath: /var/data
+      sizeGB: 1
     buildFilter:
       paths:
         - package.json
@@ -31,6 +37,15 @@ services:
         # If you're not using a Render PostgreSQL database, you'll need to set this manually
       - key: FRONTEND_URL
         sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+        # Set this to your admin email during deployment
+      - key: ADMIN_PASSWORD
+        sync: false
+        # Set this to a secure password during deployment
+      - key: ALLOWED_ORIGINS
+        sync: false
+        # Set this to your frontend URL during deployment
 
 # Database service
 databases:

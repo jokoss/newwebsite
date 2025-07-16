@@ -11,6 +11,7 @@
     "install-client": "cd client && npm install",
     "install-functions": "cd netlify/functions && npm install",
     "install": "npm run install-server && npm run install-client && npm run install-functions",
+    "docker-install": "npm run install-server && npm run install-client",
     "heroku-postbuild": "npm run build",
     "netlify-build": "npm run install-client && cd client && npm run build"
   },

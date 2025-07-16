@@ -10,9 +10,7 @@ COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 
 # Install dependencies
-RUN npm install
-RUN cd client && npm install
-RUN cd server && npm install
+RUN npm run docker-install
 
 # Copy source code
 COPY . .
@@ -35,6 +33,7 @@ RUN adduser -S nextjs -u 1001
 COPY --from=builder --chown=nextjs:nodejs /app/server ./server
 COPY --from=builder --chown=nextjs:nodejs /app/client/build ./client/build
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/render-setup.sh ./
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
