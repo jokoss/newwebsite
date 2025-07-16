@@ -9,6 +9,9 @@ COPY package*.json ./
 COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 
+# Create directories if they don't exist
+RUN mkdir -p server client
+
 # Install dependencies
 RUN npm run docker-install
 
