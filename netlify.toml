@@ -1,24 +1,7 @@
+# Simple Netlify configuration
 [build]
-  command = "npm install && cd client && npm install && CI= npm run build && node netlify.js"
+  command = "cd client && npm install && npm run build"
   publish = "client/build"
-  environment = { NODE_VERSION = "16", NETLIFY_USE_YARN = "false", CI = "false" }
-
-[functions]
-  directory = "server"
-  node_bundler = "esbuild"
-
-[[functions]]
-  name = "server"
-  external_node_modules = ["sequelize", "sqlite3", "pg", "pg-hstore", "mysql2"]
-
-[[functions]]
-  name = "uploads"
-  path = "/uploads/*"
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/server/:splat"
-  status = 200
 
 [[redirects]]
   from = "/*"
