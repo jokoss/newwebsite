@@ -202,7 +202,21 @@ When deploying to Render, you'll need to configure a disk to persist uploaded fi
 
 ### Common Issues
 
-#### Docker Build Fails
+#### Docker Build Fails with "can't cd to server: No such file or directory"
+
+This error occurs during the Docker build process when the `npm run docker-install` script tries to access the `server` directory before it exists. The fix is to create the necessary directories before running the installation scripts:
+
+```dockerfile
+# Create directories if they don't exist
+RUN mkdir -p server client
+
+# Install dependencies
+RUN npm run docker-install
+```
+
+This ensures that the directories exist before the npm scripts try to access them.
+
+#### Other Docker Build Failures
 
 ```bash
 # Clear Docker cache
