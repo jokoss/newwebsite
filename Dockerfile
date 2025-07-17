@@ -24,8 +24,8 @@ RUN cd client && npm run build
 # Production stage
 FROM node:18-alpine AS production
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init for proper signal handling and bash for scripts
+RUN apk add --no-cache dumb-init bash
 
 # Create app directory and user
 WORKDIR /app
