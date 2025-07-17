@@ -1,80 +1,56 @@
 #!/bin/bash
+
 # Script to deploy the homepage fix to Render
-# This script commits the changes and pushes them to the repository
+# This script will commit the changes to the HomePage.js file and push them to the repository
+# which will trigger the Render deployment
 
-set -e
-
-echo "=== DEPLOYING HOMEPAGE FIX TO RENDER ==="
-echo "Current directory: $(pwd)"
+echo "===== Deploying HomePage fix to Render ====="
+echo "This script will commit and push the changes to trigger a Render deployment."
 
 # Check if git is installed
 if ! command -v git &> /dev/null; then
-  echo "❌ Git is not installed. Please install git and try again."
-  exit 1
-fi
-
-# Check if the current directory is a git repository
-if [ ! -d ".git" ]; then
-  echo "❌ The current directory is not a git repository."
-  echo "Please run this script from the root of your git repository."
-  exit 1
-fi
-
-# Check if the required files exist
-echo "Checking if the required files exist..."
-REQUIRED_FILES=(
-  "Dockerfile"
-  "ensure-server-files.sh"
-  "deploy-render-fix.sh"
-  "render.yaml"
-  "RENDER-HOMEPAGE-FIX-GUIDE.md"
-)
-
-for file in "${REQUIRED_FILES[@]}"; do
-  if [ ! -f "$file" ]; then
-    echo "❌ $file does not exist."
-    echo "Please make sure all required files exist before deploying."
+    echo "Error: git is not installed. Please install git and try again."
     exit 1
-  fi
-done
-
-echo "✅ All required files exist."
-
-# Make sure the scripts are executable
-echo "Making scripts executable..."
-chmod +x ensure-server-files.sh
-chmod +x deploy-render-fix.sh
-chmod +x deploy-homepage-fix-to-render.sh
-
-# Check if there are any uncommitted changes
-if [ -n "$(git status --porcelain)" ]; then
-  echo "There are uncommitted changes in the repository."
-  echo "Do you want to commit these changes? (y/n)"
-  read -r response
-  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    # Add all changes
-    git add .
-    
-    # Commit the changes
-    git commit -m "Fix homepage blank screen issue on Render"
-    echo "✅ Changes committed."
-  else
-    echo "❌ Aborting deployment. Please commit your changes manually and try again."
-    exit 1
-  fi
-else
-  echo "✅ No uncommitted changes."
 fi
 
-# Push the changes to the repository
-echo "Pushing changes to the repository..."
+# Check if we're in a git repository
+if ! git rev-parse --is-inside-work-tree &> /dev/null; then
+    echo "Error: Not in a git repository. Please run this script from within your git repository."
+    exit 1
+fi
+
+# Check if there are any changes to commit
+if git diff --quiet client/src/pages/public/HomePage.js; then
+    echo "No changes detected in HomePage.js. Have you made the necessary changes?"
+    read -p "Continue anyway? (y/n): " continue_anyway
+    if [[ $continue_anyway != "y" ]]; then
+        echo "Deployment cancelled."
+        exit 0
+    fi
+fi
+
+# Add the changed file
+git add client/src/pages/public/HomePage.js
+
+# Commit the changes
+echo "Committing changes..."
+git commit -m "Fix: Update HomePage to handle API connection issues on Render"
+
+# Push to the repository
+echo "Pushing changes to remote repository..."
 git push
 
-echo "✅ Changes pushed to the repository."
-echo "The fix will be deployed to Render automatically if you have CI/CD set up."
-echo "Otherwise, please deploy manually from the Render dashboard."
+# Check if the push was successful
+if [ $? -eq 0 ]; then
+    echo "===== Success! ====="
+    echo "Changes have been pushed to the repository."
+    echo "The Render deployment should be triggered automatically."
+    echo "You can check the deployment status on your Render dashboard."
+else
+    echo "===== Error ====="
+    echo "Failed to push changes to the repository."
+    echo "Please check your git configuration and try again."
+    exit 1
+fi
 
-echo "=== DEPLOYMENT COMPLETE ==="
-echo "See RENDER-HOMEPAGE-FIX-GUIDE.md for more information about the fix."
-
-exit 0
+echo "Done!"
