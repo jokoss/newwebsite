@@ -2,6 +2,17 @@
 # Render pre-start setup script
 # This script runs before the application starts on Render
 
+# Debug information at the very beginning
+echo "=== RENDER SETUP SCRIPT DEBUG INFO ==="
+echo "Script path: $0"
+echo "Current user: $(whoami)"
+echo "Current directory: $(pwd)"
+echo "Directory listing:"
+ls -la
+echo "Environment variables:"
+env | grep -v PASSWORD | grep -v SECRET | grep -v KEY
+echo "=== END DEBUG INFO ==="
+
 # Exit on error, but allow for proper error handling
 set -e
 
