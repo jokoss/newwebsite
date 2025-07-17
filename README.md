@@ -2,6 +2,17 @@
 
 A full-stack web application for an analytical testing laboratory, built with React, Node.js, Express, and Sequelize.
 
+## Error Handling Improvements
+
+This application includes robust error handling to ensure stability and a good user experience:
+
+- **Client-Side Error Boundaries**: React ErrorBoundary components catch rendering errors
+- **Fallback UI Components**: Graceful degradation when components fail
+- **Early Error Detection**: Global error listeners catch and log issues
+- **API Call Improvements**: Timeouts and fallbacks for API failures
+
+For detailed information about error handling, see [ERROR-HANDLING-README.md](ERROR-HANDLING-README.md).
+
 ## Deployment to Netlify
 
 This guide explains how to deploy this application to Netlify.
@@ -143,6 +154,49 @@ To run this application locally:
    ```
    npm run dev
    ```
+
+## Docker Deployment
+
+This application can be deployed using Docker:
+
+### Building and Testing Docker Locally
+
+#### Windows
+```
+build-and-test-docker.bat
+```
+
+#### Unix/Linux/Mac
+```
+chmod +x *.sh  # Make scripts executable (first time only)
+./build-and-test-docker.sh
+```
+
+### Deploying to Render with Docker
+
+#### Windows
+```
+deploy-to-render-docker.bat
+```
+
+#### Unix/Linux/Mac
+```
+chmod +x *.sh  # Make scripts executable (first time only)
+./deploy-to-render-docker.sh
+```
+
+### Rebuilding Client with Error Handling
+
+#### Windows
+```
+rebuild-client-with-error-handling.bat
+```
+
+#### Unix/Linux/Mac
+```
+chmod +x *.sh  # Make scripts executable (first time only)
+./rebuild-client-with-error-handling.sh
+```
 
 ## File Upload Considerations
 
