@@ -216,6 +216,32 @@ RUN npm run docker-install
 
 This ensures that the directories exist before the npm scripts try to access them.
 
+#### Infinite Loop in npm Scripts
+
+If you see an infinite loop of npm scripts during the Docker build process, with output like this:
+
+```
+> analytical-testing-lab@1.0.0 install
+> npm run install-server && npm run install-client && npm run install-functions
+
+> analytical-testing-lab@1.0.0 install-server
+> cd server && npm install
+
+> analytical-testing-lab@1.0.0 install
+> npm run install-server && npm run install-client && npm run install-functions
+```
+
+This is caused by a circular dependency in the npm scripts. The solution is to rename the `install` script to something else (like `setup`) to avoid triggering the npm lifecycle script:
+
+```json
+"scripts": {
+  "setup": "npm run install-server && npm run install-client && npm run install-functions",
+  "docker-install": "npm run install-server && npm run install-client"
+}
+```
+
+This breaks the circular dependency and prevents the infinite loop.
+
 #### Other Docker Build Failures
 
 ```bash
