@@ -4,7 +4,7 @@
   "description": "Analytical Testing Laboratory Website",
   "main": "server/index.js",
   "scripts": {
-    "start": "node server/index.js",
+    "start": "node start-server.js",
     "build": "cd client && npm install && npm run build",
     "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
     "install-server": "cd server && npm install",
@@ -15,8 +15,10 @@
     "heroku-postbuild": "npm run build",
     "netlify-build": "npm run install-client && cd client && npm run build",
     "render-build": "npm install && npm run install-server && npm run install-client && npm run build",
-    "render-start": "node server/index.js",
-    "render-debug": "NODE_DEBUG=http,net,stream node server/index.js"
+    "render-start": "node start-server.js",
+    "render-start-direct": "node server/index.js",
+    "render-start-fallback": "cd server && node index.js",
+    "render-debug": "NODE_DEBUG=http,net,stream node start-server.js"
   },
   "engines": {
     "node": ">=14.0.0"
