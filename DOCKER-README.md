@@ -242,6 +242,27 @@ This is caused by a circular dependency in the npm scripts. The solution is to r
 
 This breaks the circular dependency and prevents the infinite loop.
 
+#### Missing Bash in Alpine Docker Image
+
+If you see an error like this during deployment:
+
+```
+/bin/sh: bash: not found
+==> Exited with status 127
+```
+
+This occurs because the Alpine Linux image used in the Dockerfile doesn't include bash by default. The solution is to add bash to the production stage of your Dockerfile:
+
+```dockerfile
+# Production stage
+FROM node:18-alpine AS production
+
+# Install dumb-init for proper signal handling and bash for scripts
+RUN apk add --no-cache dumb-init bash
+```
+
+This ensures that bash is available when the container tries to run bash scripts like `render-setup.sh`.
+
 #### Other Docker Build Failures
 
 ```bash
