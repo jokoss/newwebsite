@@ -20,7 +20,7 @@ import {
   Slide,
   Avatar
 } from '@mui/material';
-import ApiErrorHandler from '../../components/utils/ApiErrorHandler';\nimport RenderApiErrorHandler from '../../components/utils/RenderApiErrorHandler';
+import ApiErrorHandler from '../../components/utils/ApiErrorHandler';
 import RenderApiErrorHandler from '../../components/utils/RenderApiErrorHandler';
 import { 
   ArrowForward as ArrowForwardIcon,
@@ -46,7 +46,7 @@ const Hero = () => {
     setIsVisible(true);
   }, []);
 
-    // Determine if we're on Render\n  const isRenderHosted = typeof window  ApiErrorHandler;\n\n  return (
+  return (
     <Box
       sx={{
         position: 'relative',
@@ -359,7 +359,7 @@ const HomePage = () => {
         checkApiConnection(true);
       }, 2000 * (retryCount + 1)); // Exponential backoff
       
-        // Determine if we're on Render\n  const isRenderHosted = typeof window  ApiErrorHandler;\n\n  return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
     }
   }, [error, retryCount]);
 
@@ -369,7 +369,7 @@ const HomePage = () => {
     checkApiConnection();
     
     // Cleanup function
-      // Determine if we're on Render\n  const isRenderHosted = typeof window  ApiErrorHandler;\n\n  return () => {
+    return () => {
       console.log('HomePage unmounting, cleaning up...');
     };
   }, []);
@@ -388,7 +388,7 @@ const HomePage = () => {
   // Use RenderApiErrorHandler for Render deployments, otherwise use regular ApiErrorHandler
   const ErrorHandler = isRenderHosted ? RenderApiErrorHandler : ApiErrorHandler;
 
-    // Determine if we're on Render\n  const isRenderHosted = typeof window  ApiErrorHandler;\n\n  return (
+  return (
     <ErrorHandler 
       error={error} 
       errorMessage={errorMessage}
