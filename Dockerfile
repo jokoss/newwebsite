@@ -37,6 +37,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/server ./server
 COPY --from=builder --chown=nextjs:nodejs /app/client/build ./client/build
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/render-setup.sh ./
+COPY --from=builder --chown=nextjs:nodejs /app/render-setup-minimal.sh ./
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
@@ -56,4 +57,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 # Start the application
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["/bin/sh", "-c", "sh render-setup.sh && node server/index.js"]
+CMD ["/bin/sh", "-c", "sh render-setup-minimal.sh && node server/index.js"]
