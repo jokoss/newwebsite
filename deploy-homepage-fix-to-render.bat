@@ -1,8 +1,14 @@
 @echo off
-REM Script to deploy homepage fix to Render for Windows users
+REM Script to deploy homepage fix to Render
 
-echo === Deploying Homepage Fix to Render ===
-echo This script will help you deploy the fixes for the blank homepage issue to Render.
+echo === DEPLOYING HOMEPAGE FIX TO RENDER ===
+echo This script will:
+echo 1. Run the update-homepage-for-render.js script to update the HomePage.js file
+echo 2. Run the add-health-endpoints.js script to add enhanced health check endpoints
+echo 3. Commit the changes
+echo 4. Push to your repository
+echo 5. Deploy to Render
+echo 6. Provide instructions for running the admin setup script on Render
 
 REM Check if git is installed
 where git >nul 2>&1
@@ -18,108 +24,76 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-REM Check for uncommitted changes
-git diff-index --quiet HEAD -- >nul 2>&1
+REM Check if node is installed
+where node >nul 2>&1
 if %ERRORLEVEL% neq 0 (
-    echo Warning: You have uncommitted changes.
-    set /p CONTINUE=Do you want to continue anyway? (y/n): 
-    if /i not "%CONTINUE%"=="y" (
-        echo Deployment cancelled.
-        exit /b 1
-    )
-)
-
-REM Verify the files we modified exist
-echo Verifying modified files...
-set MISSING_FILES=0
-
-if not exist "client\src\pages\public\HomePage.js" (
-    echo Missing file: client\src\pages\public\HomePage.js
-    set /a MISSING_FILES+=1
-)
-if not exist "server\index.js" (
-    echo Missing file: server\index.js
-    set /a MISSING_FILES+=1
-)
-if not exist "client\src\utils\api.js" (
-    echo Missing file: client\src\utils\api.js
-    set /a MISSING_FILES+=1
-)
-if not exist "client\src\index.js" (
-    echo Missing file: client\src\index.js
-    set /a MISSING_FILES+=1
-)
-if not exist "client\src\components\utils\ApiErrorHandler.js" (
-    echo Missing file: client\src\components\utils\ApiErrorHandler.js
-    set /a MISSING_FILES+=1
-)
-if not exist "healthcheck.js" (
-    echo Missing file: healthcheck.js
-    set /a MISSING_FILES+=1
-)
-if not exist "Dockerfile" (
-    echo Missing file: Dockerfile
-    set /a MISSING_FILES+=1
-)
-if not exist "RENDER-HOMEPAGE-FIX-GUIDE.md" (
-    echo Missing file: RENDER-HOMEPAGE-FIX-GUIDE.md
-    set /a MISSING_FILES+=1
-)
-
-if %MISSING_FILES% neq 0 (
-    echo Error: Some required files are missing. Please make sure all the required files exist before deploying.
+    echo Error: Node.js is not installed. Please install Node.js and try again.
     exit /b 1
 )
 
-echo All required files found.
+REM Run the update-homepage-for-render.js script
+echo.
+echo --- Updating HomePage.js for Render ---
+node server/scripts/update-homepage-for-render.js
 
-REM Commit changes
-echo Committing changes...
-git add client\src\pages\public\HomePage.js server\index.js client\src\utils\api.js client\src\index.js client\src\components\utils\ApiErrorHandler.js healthcheck.js Dockerfile RENDER-HOMEPAGE-FIX-GUIDE.md
+REM Run the add-health-endpoints.js script
+echo.
+echo --- Adding enhanced health check endpoints ---
+node server/scripts/add-health-endpoints.js
 
-git commit -m "Fix blank homepage issue on Render deployment"
+REM Add the changes to git
+echo.
+echo --- Adding changes to git ---
+git add client/src/pages/public/HomePage.js
+git add client/src/components/utils/RenderApiErrorHandler.js
+git add server/index.js
+git add server/scripts/update-homepage-for-render.js
+git add server/scripts/add-health-endpoints.js
+git add server/scripts/render-admin-setup.js
+git add deploy-homepage-fix-to-render.sh
+git add deploy-homepage-fix-to-render.bat
+git add RENDER-HOMEPAGE-FIX-GUIDE.md
+git status
 
-REM Push to remote
-echo Pushing changes to remote repository...
-set /p PUSH=Do you want to push the changes to the remote repository? (y/n): 
-if /i "%PUSH%"=="y" (
-    REM Get current branch
-    for /f "tokens=*" %%a in ('git symbolic-ref --short HEAD') do set CURRENT_BRANCH=%%a
-    
-    REM Push to remote
-    git push origin %CURRENT_BRANCH%
-    if %ERRORLEVEL% neq 0 (
-        echo Failed to push changes. Please push manually.
-        exit /b 1
-    ) else (
-        echo Changes pushed successfully.
-    )
-) else (
-    echo Skipping push to remote.
+REM Prompt for confirmation
+set /p confirm=Continue with commit and push? (y/n): 
+if /i "%confirm%" neq "y" (
+    echo Operation cancelled.
+    exit /b 0
 )
 
-REM Provide instructions for Render deployment
-echo === Next Steps ===
-echo To deploy these changes to Render:
-echo 1. Go to your Render dashboard: https://dashboard.render.com
-echo 2. Select your service
-echo 3. Click on 'Manual Deploy'
-echo 4. Select 'Clear build cache ^& deploy'
-echo 5. Wait for the deployment to complete
-echo 6. Test your application to verify the homepage loads correctly
+REM Commit changes
+echo.
+echo --- Committing changes ---
+git commit -m "Add Render-specific fixes for homepage blank screen issue"
 
-echo === Environment Variables ===
-echo Make sure the following environment variables are set in your Render dashboard:
-echo - DATABASE_URL: Your PostgreSQL connection string
-echo - JWT_SECRET: Secret for JWT token generation
-echo - FRONTEND_URL: URL of your frontend (e.g., https://your-app.onrender.com)
-echo - NODE_ENV: Set to 'production'
-echo - ALLOWED_ORIGINS: Comma-separated list of allowed origins (should include your Render domain)
+REM Push to repository
+echo.
+echo --- Pushing to repository ---
+for /f "tokens=*" %%a in ('git rev-parse --abbrev-ref HEAD') do set branch=%%a
+git push origin %branch%
 
-echo === Troubleshooting ===
-echo If you encounter any issues, please refer to the RENDER-HOMEPAGE-FIX-GUIDE.md file for troubleshooting steps.
-
-echo === Deployment Complete ===
-echo Thank you for using the homepage fix deployment script.
+echo.
+echo === DEPLOYMENT INSTRUCTIONS ===
+echo 1. Wait for the deployment to complete on Render
+echo 2. Once deployed, go to your Render dashboard
+echo 3. Open your web service
+echo 4. Click on 'Shell' in the sidebar
+echo 5. Run the following command in the Render shell:
+echo    cd /app ^&^& node server/scripts/render-admin-setup.js
+echo.
+echo 6. After running the script, you should be able to log in with:
+echo    Username: admin
+echo    Password: Admin@123456
+echo.
+echo 7. If you still can't access the homepage, check the script output for errors
+echo    and make sure all environment variables are correctly set in the Render dashboard:
+echo    - JWT_SECRET (should be a secure random string, not the default placeholder)
+echo    - DATABASE_URL (should be set automatically by Render if using their PostgreSQL)
+echo    - FRONTEND_URL (should match your Render deployment URL)
+echo.
+echo 8. For more detailed information, refer to the RENDER-HOMEPAGE-FIX-GUIDE.md file
+echo.
+echo === DEPLOYMENT COMPLETE ===
 
 pause

@@ -1,114 +1,94 @@
 #!/bin/bash
 # Script to deploy homepage fix to Render
 
-# Set colors for output
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-
-echo -e "${GREEN}=== Deploying Homepage Fix to Render ===${NC}"
-echo "This script will help you deploy the fixes for the blank homepage issue to Render."
+echo "=== DEPLOYING HOMEPAGE FIX TO RENDER ==="
+echo "This script will:"
+echo "1. Run the update-homepage-for-render.js script to update the HomePage.js file"
+echo "2. Run the add-health-endpoints.js script to add enhanced health check endpoints"
+echo "3. Commit the changes"
+echo "4. Push to your repository"
+echo "5. Deploy to Render"
+echo "6. Provide instructions for running the admin setup script on Render"
 
 # Check if git is installed
 if ! command -v git &> /dev/null; then
-    echo -e "${RED}Error: git is not installed. Please install git and try again.${NC}"
+    echo "Error: git is not installed. Please install git and try again."
     exit 1
 fi
 
 # Check if we're in a git repository
 if ! git rev-parse --is-inside-work-tree &> /dev/null; then
-    echo -e "${RED}Error: Not in a git repository. Please run this script from your project directory.${NC}"
+    echo "Error: Not in a git repository. Please run this script from your project directory."
     exit 1
 fi
 
-# Check for uncommitted changes
-if ! git diff-index --quiet HEAD --; then
-    echo -e "${YELLOW}Warning: You have uncommitted changes.${NC}"
-    read -p "Do you want to continue anyway? (y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Deployment cancelled."
-        exit 1
-    fi
-fi
-
-# Verify the files we modified exist
-echo -e "${GREEN}Verifying modified files...${NC}"
-files_to_check=(
-    "client/src/pages/public/HomePage.js"
-    "server/index.js"
-    "client/src/utils/api.js"
-    "client/src/index.js"
-    "client/src/components/utils/ApiErrorHandler.js"
-    "healthcheck.js"
-    "Dockerfile"
-    "RENDER-HOMEPAGE-FIX-GUIDE.md"
-)
-
-missing_files=()
-for file in "${files_to_check[@]}"; do
-    if [ ! -f "$file" ]; then
-        missing_files+=("$file")
-    fi
-done
-
-if [ ${#missing_files[@]} -ne 0 ]; then
-    echo -e "${RED}Error: The following files are missing:${NC}"
-    for file in "${missing_files[@]}"; do
-        echo "  - $file"
-    done
-    echo "Please make sure all the required files exist before deploying."
+# Check if node is installed
+if ! command -v node &> /dev/null; then
+    echo "Error: Node.js is not installed. Please install Node.js and try again."
     exit 1
 fi
 
-echo -e "${GREEN}All required files found.${NC}"
+# Run the update-homepage-for-render.js script
+echo
+echo "--- Updating HomePage.js for Render ---"
+node server/scripts/update-homepage-for-render.js
+
+# Run the add-health-endpoints.js script
+echo
+echo "--- Adding enhanced health check endpoints ---"
+node server/scripts/add-health-endpoints.js
+
+# Add the changes to git
+echo
+echo "--- Adding changes to git ---"
+git add client/src/pages/public/HomePage.js
+git add client/src/components/utils/RenderApiErrorHandler.js
+git add server/index.js
+git add server/scripts/update-homepage-for-render.js
+git add server/scripts/add-health-endpoints.js
+git add server/scripts/render-admin-setup.js
+git add deploy-homepage-fix-to-render.sh
+git add deploy-homepage-fix-to-render.bat
+git add RENDER-HOMEPAGE-FIX-GUIDE.md
+git status
+
+# Prompt for confirmation
+read -p "Continue with commit and push? (y/n): " confirm
+if [[ $confirm != "y" ]]; then
+    echo "Operation cancelled."
+    exit 0
+fi
 
 # Commit changes
-echo -e "${GREEN}Committing changes...${NC}"
-git add client/src/pages/public/HomePage.js server/index.js client/src/utils/api.js client/src/index.js client/src/components/utils/ApiErrorHandler.js healthcheck.js Dockerfile RENDER-HOMEPAGE-FIX-GUIDE.md
-
-git commit -m "Fix blank homepage issue on Render deployment"
-
-# Push to remote
-echo -e "${GREEN}Pushing changes to remote repository...${NC}"
-read -p "Do you want to push the changes to the remote repository? (y/n) " -n 1 -r
 echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    # Get current branch
-    current_branch=$(git symbolic-ref --short HEAD)
-    
-    # Push to remote
-    if git push origin "$current_branch"; then
-        echo -e "${GREEN}Changes pushed successfully.${NC}"
-    else
-        echo -e "${RED}Failed to push changes. Please push manually.${NC}"
-        exit 1
-    fi
-else
-    echo -e "${YELLOW}Skipping push to remote.${NC}"
-fi
+echo "--- Committing changes ---"
+git commit -m "Add Render-specific fixes for homepage blank screen issue"
 
-# Provide instructions for Render deployment
-echo -e "${GREEN}=== Next Steps ===${NC}"
-echo -e "To deploy these changes to Render:"
-echo -e "1. Go to your Render dashboard: ${YELLOW}https://dashboard.render.com${NC}"
-echo -e "2. Select your service"
-echo -e "3. Click on 'Manual Deploy'"
-echo -e "4. Select 'Clear build cache & deploy'"
-echo -e "5. Wait for the deployment to complete"
-echo -e "6. Test your application to verify the homepage loads correctly"
+# Push to repository
+echo
+echo "--- Pushing to repository ---"
+branch=$(git rev-parse --abbrev-ref HEAD)
+git push origin $branch
 
-echo -e "${GREEN}=== Environment Variables ===${NC}"
-echo -e "Make sure the following environment variables are set in your Render dashboard:"
-echo -e "- DATABASE_URL: Your PostgreSQL connection string"
-echo -e "- JWT_SECRET: Secret for JWT token generation"
-echo -e "- FRONTEND_URL: URL of your frontend (e.g., https://your-app.onrender.com)"
-echo -e "- NODE_ENV: Set to 'production'"
-echo -e "- ALLOWED_ORIGINS: Comma-separated list of allowed origins (should include your Render domain)"
-
-echo -e "${GREEN}=== Troubleshooting ===${NC}"
-echo -e "If you encounter any issues, please refer to the RENDER-HOMEPAGE-FIX-GUIDE.md file for troubleshooting steps."
-
-echo -e "${GREEN}=== Deployment Complete ===${NC}"
-echo -e "Thank you for using the homepage fix deployment script."
+echo
+echo "=== DEPLOYMENT INSTRUCTIONS ==="
+echo "1. Wait for the deployment to complete on Render"
+echo "2. Once deployed, go to your Render dashboard"
+echo "3. Open your web service"
+echo "4. Click on 'Shell' in the sidebar"
+echo "5. Run the following command in the Render shell:"
+echo "   cd /app && node server/scripts/render-admin-setup.js"
+echo
+echo "6. After running the script, you should be able to log in with:"
+echo "   Username: admin"
+echo "   Password: Admin@123456"
+echo
+echo "7. If you still can't access the homepage, check the script output for errors"
+echo "   and make sure all environment variables are correctly set in the Render dashboard:"
+echo "   - JWT_SECRET (should be a secure random string, not the default placeholder)"
+echo "   - DATABASE_URL (should be set automatically by Render if using their PostgreSQL)"
+echo "   - FRONTEND_URL (should match your Render deployment URL)"
+echo
+echo "8. For more detailed information, refer to the RENDER-HOMEPAGE-FIX-GUIDE.md file"
+echo
+echo "=== DEPLOYMENT COMPLETE ==="
