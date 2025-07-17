@@ -32,18 +32,24 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
+# Create directories with proper permissions
+RUN mkdir -p /app/server /app/client/build /app/uploads /app/data \
+    && chown -R nextjs:nodejs /app
+
 # Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/server ./server
 COPY --from=builder --chown=nextjs:nodejs /app/client/build ./client/build
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/render-setup.sh ./
 COPY --from=builder --chown=nextjs:nodejs /app/render-setup-minimal.sh ./
+COPY --from=builder --chown=nextjs:nodejs /app/ensure-server-files.sh ./
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Create uploads directory
-RUN mkdir -p /app/server/uploads && chown -R nextjs:nodejs /app/server/uploads
+# Ensure uploads directory exists with proper permissions
+RUN mkdir -p /app/server/uploads /app/uploads \
+    && chown -R nextjs:nodejs /app/server/uploads /app/uploads
 
 # Switch to non-root user
 USER nextjs
@@ -57,4 +63,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 # Start the application
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["/bin/sh", "-c", "sh render-setup-minimal.sh && node server/index.js"]
+CMD ["/bin/sh", "-c", "sh render-setup-minimal.sh && sh ensure-server-files.sh && node server/index.js || (echo 'Fallback: Running ensure-server-files.sh' && sh ensure-server-files.sh && node server/index.js)"]

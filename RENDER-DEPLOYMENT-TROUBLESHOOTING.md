@@ -24,10 +24,20 @@ This error occurs because the setup script is trying to create directories in `/
    - Avoids trying to create directories in restricted locations like `/opt/render/`
    - Provides detailed debug output
    - Creates a minimal index.html file to verify the script is running
+   - Tries multiple possible directory locations and uses the first writable one
+   - Creates symbolic links to persistent storage when available
 
-3. **Updated Dockerfile**: We've modified the Dockerfile to:
-   - Include both the original and minimal setup scripts
-   - Use the minimal setup script for now to help diagnose the issue
+3. **Created a Server Files Fallback Script**: We've created a new script called `ensure-server-files.sh` that:
+   - Checks if server/index.js exists and creates it if missing
+   - Searches for index.js files elsewhere in the application and copies them to the correct location
+   - Creates a minimal server implementation as a last resort
+   - Ensures all necessary directories and files exist for the server to run
+
+4. **Updated Dockerfile**: We've modified the Dockerfile to:
+   - Include all setup scripts
+   - Create directories with proper permissions during the build
+   - Use a fallback mechanism to ensure the server can start even if some setup steps fail
+   - Add better error handling and recovery options
 
 ## How to Deploy
 
@@ -65,6 +75,28 @@ Based on the results of this deployment, we'll:
 1. Update the main `render-setup.sh` script to avoid creating directories in restricted locations
 2. Ensure all file operations are performed in locations where the application has write permissions
 3. Implement proper error handling and fallbacks for all operations
+4. Optimize the Docker image size and build process
+5. Add more comprehensive health checks and monitoring
+6. Document the deployment process and environment requirements in detail
+
+## Recent Improvements
+
+The latest changes include:
+
+1. **Improved Directory Handling**:
+   - The setup script now tries multiple possible directory locations
+   - It uses the first writable directory it finds
+   - It creates symbolic links to persistent storage when available
+
+2. **Better Error Recovery**:
+   - The application can now recover from missing server files
+   - A fallback mechanism ensures the server can start even if some setup steps fail
+   - Detailed logging helps diagnose issues quickly
+
+3. **Enhanced Permissions Management**:
+   - Directories are created with proper permissions during the Docker build
+   - The application runs as a non-root user for better security
+   - Persistent storage is properly linked to application directories
 
 ## Additional Resources
 
