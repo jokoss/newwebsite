@@ -7,7 +7,7 @@ services:
     name: analytical-lab
     env: docker
     dockerfilePath: ./Dockerfile
-    preDeployCommand: chmod +x ./deploy-render-fix.sh && ./deploy-render-fix.sh
+    preDeployCommand: ./deploy-render-fix.sh
     healthCheckPath: /api/health
     numInstances: 1
     disk:

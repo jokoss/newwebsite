@@ -65,9 +65,11 @@ fi
 
 # Check for server/index.js (main entry point)
 if [ ! -f "server/index.js" ]; then
-    echo "Warning: server/index.js not found."
+    echo "ERROR: server/index.js not found!"
+    echo "This is a critical error - the server cannot start without this file."
+    exit 1
 else
-    echo "Server entry point found."
+    echo "✓ server/index.js found."
 fi
 
 # Check for healthcheck.js

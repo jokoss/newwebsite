@@ -36,10 +36,14 @@ RUN adduser -S nextjs -u 1001
 RUN mkdir -p /app/server /app/client/build /app/uploads /app/data \
     && chown -R nextjs:nodejs /app
 
-# Copy built application - simplified approach
+# Copy built application with explicit structure
 COPY --from=builder --chown=nextjs:nodejs /app/server ./server
 COPY --from=builder --chown=nextjs:nodejs /app/client/build ./client/build
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
+
+# Ensure server/index.js exists and is executable
+RUN ls -la ./server/ && \
+    if [ ! -f ./server/index.js ]; then echo "ERROR: server/index.js not found!"; exit 1; fi
 
 # Copy diagnostic and error handling scripts
 COPY --from=builder --chown=nextjs:nodejs /app/client-error-handler.js ./client/build/
@@ -68,12 +72,12 @@ RUN mkdir -p /app/server/uploads /app/uploads \
 # Switch to non-root user
 USER nextjs
 
-# Expose port
-EXPOSE 5000
+# Expose port (dynamic for Render)
+EXPOSE ${PORT:-5000}
 
-# Health check
+# Health check (use dynamic port)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:5000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+  CMD node -e "const port = process.env.PORT || 5000; require('http').get(\`http://localhost:\${port}/api/health\`, (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
 # Start the application
 ENTRYPOINT ["dumb-init", "--"]
