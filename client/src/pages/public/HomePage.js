@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
@@ -43,13 +43,31 @@ const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    try {
+      // Existing useEffect code will go here
+  
     // Delay visibility to ensure smooth animation
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 100);
     
-    return () => clearTimeout(timer);
-  }, []);
+    
+  // If there's an error or we're in a Render environment with warnings, show fallback content
+  if (hasError || (isRenderEnvironment() && renderWarning)) {
+    console.log('Rendering fallback content due to:', hasError ? 'error' : 'Render warning');
+    return renderFallbackContent();
+  }
+  
+  // Normal rendering
+  return () => clearTimeout(timer);
+  
+    } catch (error) {
+      console.error('Error in HomePage data fetching:', error);
+      setHasError(true);
+      setErrorMessage(error.message);
+      setIsLoading(false);
+    }
+    }, []);
 
   return (
     <Box
@@ -536,6 +554,127 @@ const CtaSection = () => {
 
 // Enhanced HomePage component with robust error handling and fallback content
 const HomePage = () => {
+  // State for tracking API loading and errors
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [renderWarning, setRenderWarning] = useState(false);
+  const loadingTimeoutRef = useRef(null);
+  
+  // Helper function to detect if we're in a Render environment
+  const isRenderEnvironment = () => {
+    return (
+      typeof window !== 'undefined' &&
+      (window.location.hostname.includes('render.com') || 
+       window.location.hostname.includes('onrender.com'))
+    );
+  };
+  
+  // Fallback content to display if there are API issues
+  const renderFallbackContent = () => {
+    return (
+      <div className="fallback-content" style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+        <h1>Welcome to Analytical Testing Laboratory</h1>
+        {renderWarning && (
+          <div style={{ 
+            padding: '15px', 
+            marginBottom: '20px', 
+            backgroundColor: '#fff3cd', 
+            border: '1px solid #ffeeba', 
+            borderRadius: '4px',
+            color: '#856404'
+          }}>
+            <h4 style={{ marginTop: '0' }}>Connection Notice</h4>
+            <p>We're experiencing some connectivity issues with our backend services. 
+            Some content may not be fully available at the moment.</p>
+            <p>Please try refreshing the page or check back later.</p>
+          </div>
+        )}
+        
+        <div style={{ marginBottom: '30px' }}>
+          <h2>Our Services</h2>
+          <p>We provide comprehensive analytical testing services for various industries including:</p>
+          <ul>
+            <li>Chemical Analysis</li>
+            <li>Microbiological Testing</li>
+            <li>Environmental Analysis</li>
+            <li>Food & Beverage Testing</li>
+            <li>Material Characterization</li>
+            <li>And more...</li>
+          </ul>
+          <p>Please navigate to our Services page to learn more about our specific offerings.</p>
+        </div>
+        
+        <div style={{ marginBottom: '30px' }}>
+          <h2>Why Choose Us</h2>
+          <p>With state-of-the-art equipment and experienced professionals, we deliver:</p>
+          <ul>
+            <li>Accurate and reliable results</li>
+            <li>Quick turnaround times</li>
+            <li>Comprehensive reporting</li>
+            <li>Customized testing solutions</li>
+            <li>Excellent customer service</li>
+          </ul>
+        </div>
+        
+        <div>
+          <h2>Contact Us</h2>
+          <p>For inquiries about our services or to request a quote, please con
+    try {
+      // Existing useEffect code will go here
+  tact us at:</p>
+          <p><strong>Email:</strong> info@analyticaltestinglab.com</p>
+          <p><strong>Phone:</strong> (123) 456-7890</p>
+        </div>
+      </div>
+    );
+  
+    } catch (error) {
+      console.error('Error in HomePage data fetching:', error);
+      setHasError(true);
+      setErrorMessage(error.message);
+      setIsLoading(false);
+    }
+    };
+  
+  // Set up a safety timeout for loading
+  useEffect(() => {
+    // Set a timeout to prevent infinite loading state
+    loadingTimeoutRef.current = setTimeout(() => {
+      if (isLoading) {
+        console.log('Loading timeout reached, showing fallback content');
+        setIsLoading(false);
+        setRenderWarning(true);
+      }
+    }, 10000); // 10 second timeout
+    
+    // Check for Render-specific issues
+    if (isRenderEnvironment()) {
+      console.log('Render environment detected, enabling enhanced error handling');
+      
+      // Add a specific check for API connectivity
+      fetch('/api/health')
+        .then(response => {
+          if (!response.ok) throw new Error('API health check failed');
+          return response.json();
+        })
+        .then(data => {
+          console.log('API health check successful:', data);
+          // We'll still let the normal data loading happen
+        })
+        .catch(error => {
+          console.error('API health check failed:', error);
+          setRenderWarning(true);
+        });
+    }
+    
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [isLoading]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -698,13 +837,23 @@ const HomePage = () => {
       // Provide more helpful error messages based on error type
       if (err.code === 'ECONNABORTED') {
         setErrorMessage('Connection timed out. The server is taking too long to respond.');
-      } else if (err.message && err.message.includes('Network Error')) {
+      } else if (err.message && err.message
+    try {
+      // Existing useEffect code will go here
+  .includes('Network Error')) {
         setErrorMessage('Network error. Please check your internet connection or the server might be down.');
       } else {
         setErrorMessage(err.message || 'Failed to connect to the server');
       }
 
       setLoading(false);
+    
+    } catch (error) {
+      console.error('Error in HomePage data fetching:', error);
+      setHasError(true);
+      setErrorMessage(error.message);
+      setIsLoading(false);
+    }
     } finally {
       // Ensure we mark initial render as complete regardless of success/failure
       setInitialRenderComplete(true);
@@ -712,7 +861,10 @@ const HomePage = () => {
   };
 
   // Auto-retry mechanism for connection issues
-  useEffect(() => {
+  useEffect(() 
+    try {
+      // Existing useEffect code will go here
+  => {
     if (apiStatus === 'error' && retryCount < maxRetries) {
       const timer = setTimeout(() => {
         console.log(`Auto-retrying connection (${retryCount + 1}/${maxRetries})...`);
@@ -863,6 +1015,13 @@ const HomePage = () => {
       )}
     </Box>
   );
-};
+
+    } catch (error) {
+      console.error('Error in HomePage data fetching:', error);
+      setHasError(true);
+      setErrorMessage(error.message);
+      setIsLoading(false);
+    }
+    };
 
 export default HomePage;
