@@ -98,6 +98,12 @@ The latest changes include:
    - The application runs as a non-root user for better security
    - Persistent storage is properly linked to application directories
 
+4. **Dependency Management Fixes**:
+   - Server dependencies are now installed separately to ensure they're available
+   - The ensure-server-files.sh script checks for missing dependencies and installs them
+   - A fallback mechanism creates a minimal package.json if one doesn't exist
+   - Multiple installation paths are attempted to ensure express and other core dependencies are available
+
 ## Additional Resources
 
 - [Render Filesystem Documentation](https://render.com/docs/disks)

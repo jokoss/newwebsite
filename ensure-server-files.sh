@@ -79,6 +79,24 @@ EOF
   fi
 fi
 
+# Check for node_modules and install dependencies if needed
+echo "Checking for node_modules..."
+if [ ! -d "/app/node_modules" ] || [ ! -d "/app/node_modules/express" ]; then
+  echo "❌ Express module not found in /app/node_modules"
+  echo "Installing express and other dependencies..."
+  cd /app && npm install express cors dotenv 2>/dev/null && \
+    echo "✅ Installed express and core dependencies in /app" || \
+    echo "❌ Failed to install express in /app"
+fi
+
+if [ ! -d "/app/server/node_modules" ] || [ ! -d "/app/server/node_modules/express" ]; then
+  echo "❌ Express module not found in /app/server/node_modules"
+  echo "Installing server dependencies..."
+  cd /app/server && npm install express cors dotenv 2>/dev/null && \
+    echo "✅ Installed express and core dependencies in /app/server" || \
+    echo "❌ Failed to install express in /app/server"
+fi
+
 # Check if server directory has other necessary files
 echo "Checking for other necessary server files..."
 
@@ -141,8 +159,40 @@ EOF
   echo "✅ Created minimal index.html file"
 fi
 
+# Create a minimal package.json in server directory if it doesn't exist
+if [ ! -f "/app/server/package.json" ]; then
+  echo "❌ /app/server/package.json does not exist"
+  echo "Creating minimal package.json..."
+  
+  cat > /app/server/package.json << EOF
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Server for the application",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3"
+  }
+}
+EOF
+  echo "✅ Created minimal package.json"
+  
+  # Install dependencies
+  cd /app/server && npm install 2>/dev/null && \
+    echo "✅ Installed dependencies from minimal package.json" || \
+    echo "❌ Failed to install dependencies from minimal package.json"
+fi
+
 echo "=== SERVER FILES CHECK COMPLETE ==="
 echo "Directory listing of /app/server:"
 ls -la /app/server 2>/dev/null || echo "❌ /app/server does not exist"
+
+echo "Node modules in /app:"
+ls -la /app/node_modules 2>/dev/null | grep express || echo "❌ Express not found in /app/node_modules"
+
+echo "Node modules in /app/server:"
+ls -la /app/server/node_modules 2>/dev/null | grep express || echo "❌ Express not found in /app/server/node_modules"
 
 exit 0
