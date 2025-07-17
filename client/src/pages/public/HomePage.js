@@ -545,20 +545,34 @@ const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [partners, setPartners] = useState([]);
   const [blogPosts, setBlogPosts] = useState([]);
+  const [renderSpecificError, setRenderSpecificError] = useState(false);
+  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const maxRetries = 3;
 
   // Function to safely fetch data with error handling
-  const fetchData = async (endpoint, setter, logPrefix) => {
+  const fetchData = async (endpoint, setter, logPrefix, fallbackData = []) => {
     console.log(`Fetching ${logPrefix} for homepage...`);
     try {
-      const response = await api.get(endpoint, { timeout: 8000 });
+      const response = await api.get(endpoint, { 
+        timeout: 8000,
+        // Add cache-busting parameter specifically for Render
+        params: {
+          _t: Date.now()
+        }
+      });
       if (response && response.data) {
-        setter(response.data);
+        // Ensure we're setting an array even if the API returns null/undefined
+        setter(Array.isArray(response.data) ? response.data : fallbackData);
         return true;
+      } else {
+        // If response exists but data is missing, use fallback
+        console.warn(`[warning] No data in response for ${logPrefix}, using fallback`);
+        setter(fallbackData);
       }
     } catch (err) {
       console.error(`[error] Error fetching ${logPrefix}:`, err);
-      // Don't throw, just return false to indicate failure
+      // Set fallback data on error
+      setter(fallbackData);
       return false;
     }
     return false;
@@ -578,7 +592,11 @@ const HomePage = () => {
 
       try {
         // First try the health endpoint
-        response = await api.get('/health', { timeout: 5000 });
+        response = await api.get('/health', { 
+          timeout: 5000,
+          // Add cache-busting parameter
+          params: { _t: Date.now() }
+        });
         console.log('API health check successful:', response.data);
         setApiStatus('healthy');
         setApiConnected(true);
@@ -588,7 +606,11 @@ const HomePage = () => {
 
         // If health endpoint fails, try the API root
         try {
-          response = await api.get('/', { timeout: 5000 });
+          response = await api.get('/', { 
+            timeout: 5000,
+            // Add cache-busting parameter
+            params: { _t: Date.now() }
+          });
           console.log('API root check successful:', response.data);
           setApiStatus('available');
           setApiConnected(true);
@@ -598,17 +620,61 @@ const HomePage = () => {
           console.error('API root check failed:', rootErr);
           setApiStatus('error');
           setApiConnected(false);
+          
+          // Check if this is a Render-specific issue
+          const isRenderDomain = window.location.hostname.includes('render.com') || 
+                                window.location.hostname.includes('onrender.com');
+          if (isRenderDomain) {
+            console.warn('Detected Render-specific connectivity issue');
+            setRenderSpecificError(true);
+          }
         }
       }
 
+      // Define fallback data for each endpoint
+      const fallbackCategories = [
+        { id: 1, name: "Chemical Testing", description: "Comprehensive chemical analysis services" },
+        { id: 2, name: "Microbiological Testing", description: "Detection and identification of microorganisms" },
+        { id: 3, name: "Environmental Analysis", description: "Testing of environmental samples" }
+      ];
+      
+      const fallbackPartners = [
+        { id: 1, name: "Research Institute", logo: null },
+        { id: 2, name: "Healthcare Labs", logo: null },
+        { id: 3, name: "Industrial Solutions", logo: null }
+      ];
+      
+      const fallbackBlogPosts = [
+        { id: 1, title: "Latest Analytical Methods", slug: "latest-methods", excerpt: "Overview of cutting-edge analytical techniques" },
+        { id: 2, title: "Quality Control Essentials", slug: "quality-control", excerpt: "Best practices for quality control in laboratories" }
+      ];
+
+      // Initialize with fallback data immediately to ensure the UI has something to render
+      setCategories(fallbackCategories);
+      setPartners(fallbackPartners);
+      setBlogPosts(fallbackBlogPosts);
+
       // Only try to fetch data if we have a connection
       if (connected) {
-        // Fetch data in parallel
-        await Promise.allSettled([
-          fetchData('/categories', setCategories, 'categories'),
-          fetchData('/partners', setPartners, 'partners'),
-          fetchData('/blog/posts', setBlogPosts, 'blog posts')
-        ]);
+        try {
+          // Fetch data in parallel with individual error handling
+          const results = await Promise.allSettled([
+            fetchData('/categories', setCategories, 'categories', fallbackCategories),
+            fetchData('/partners', setPartners, 'partners', fallbackPartners),
+            fetchData('/blog/posts', setBlogPosts, 'blog posts', fallbackBlogPosts)
+          ]);
+          
+          // Log results for debugging
+          results.forEach((result, index) => {
+            const endpoints = ['/categories', '/partners', '/blog/posts'];
+            if (result.status === 'rejected') {
+              console.error(`Failed to fetch from ${endpoints[index]}:`, result.reason);
+            }
+          });
+        } catch (err) {
+          console.error('Error during parallel data fetching:', err);
+          // Fallback data is already set, so UI will still render
+        }
       }
 
       setLoading(false);
@@ -639,6 +705,9 @@ const HomePage = () => {
       }
 
       setLoading(false);
+    } finally {
+      // Ensure we mark initial render as complete regardless of success/failure
+      setInitialRenderComplete(true);
     }
   };
 
@@ -648,16 +717,46 @@ const HomePage = () => {
       const timer = setTimeout(() => {
         console.log(`Auto-retrying connection (${retryCount + 1}/${maxRetries})...`);
         setRetryCount(prev => prev + 1);
-        checkApiConnection(true);
+        try {
+          checkApiConnection(true);
+        } catch (err) {
+          console.error('Error during auto-retry:', err);
+          // Ensure we don't get stuck in a loading state
+          setLoading(false);
+          setInitialRenderComplete(true);
+        }
       }, 2000 * (retryCount + 1)); // Exponential backoff
 
       return () => clearTimeout(timer);
     }
-  }, [apiStatus, retryCount]);
+  }, [apiStatus, retryCount, maxRetries]);
 
   // Check API connection when component mounts
   useEffect(() => {
     console.log('HomePage mounted, checking API connection...');
+    
+    // Define fallback data for immediate rendering
+    const fallbackCategories = [
+      { id: 1, name: "Chemical Testing", description: "Comprehensive chemical analysis services" },
+      { id: 2, name: "Microbiological Testing", description: "Detection and identification of microorganisms" },
+      { id: 3, name: "Environmental Analysis", description: "Testing of environmental samples" }
+    ];
+    
+    const fallbackPartners = [
+      { id: 1, name: "Research Institute", logo: null },
+      { id: 2, name: "Healthcare Labs", logo: null },
+      { id: 3, name: "Industrial Solutions", logo: null }
+    ];
+    
+    const fallbackBlogPosts = [
+      { id: 1, title: "Latest Analytical Methods", slug: "latest-methods", excerpt: "Overview of cutting-edge analytical techniques" },
+      { id: 2, title: "Quality Control Essentials", slug: "quality-control", excerpt: "Best practices for quality control in laboratories" }
+    ];
+
+    // Initialize with fallback data immediately to ensure the UI has something to render
+    setCategories(fallbackCategories);
+    setPartners(fallbackPartners);
+    setBlogPosts(fallbackBlogPosts);
     
     // Wrap in try-catch to ensure the component renders even if this fails
     try {
@@ -666,31 +765,52 @@ const HomePage = () => {
       console.error('Error in initial API connection check:', err);
       // Ensure loading is set to false to prevent infinite loading state
       setLoading(false);
+      setInitialRenderComplete(true);
     }
+
+    // Mark component as mounted to prevent issues with React 18 Strict Mode
+    const timer = setTimeout(() => {
+      if (!initialRenderComplete) {
+        console.warn('Forcing initialRenderComplete to true after timeout');
+        setInitialRenderComplete(true);
+        setLoading(false);
+      }
+    }, 5000); // Shorter safety timeout
 
     // Cleanup function
     return () => {
       console.log('HomePage unmounting, cleaning up...');
+      clearTimeout(timer);
     };
   }, []);
 
   const handleRetry = () => {
     console.log('Manual retry initiated');
     setRetryCount(0);
-    checkApiConnection();
+    setRenderSpecificError(false);
+    try {
+      checkApiConnection();
+    } catch (err) {
+      console.error('Error during manual retry:', err);
+      // Ensure we don't get stuck in a loading state
+      setLoading(false);
+      setInitialRenderComplete(true);
+    }
   };
 
   // Always render the page content, even if API connection fails
   return (
     <Box>
       {/* API connection warning if needed */}
-      {apiStatus === 'error' && (
+      {apiStatus === 'error' && initialRenderComplete && (
         <Box sx={{ py: 2, bgcolor: '#FFF3E0' }}>
           <Container maxWidth="lg">
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <WarningIcon color="warning" />
               <Typography variant="body1">
-                We're experiencing some technical difficulties. Some content may not be available.
+                {renderSpecificError 
+                  ? "We're experiencing connectivity issues with our API on Render. Some content may not be available."
+                  : "We're experiencing some technical difficulties. Some content may not be available."}
                 <Button
                   size="small"
                   startIcon={<RefreshIcon />}
@@ -706,8 +826,8 @@ const HomePage = () => {
       )}
 
       {/* Main content */}
-      {loading ? (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 8 }}>
+      {loading && !initialRenderComplete ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 8, minHeight: '50vh' }}>
           <CircularProgress size={40} sx={{ mb: 2 }} />
           <Typography variant="body2" color="text.secondary">
             Loading content...
