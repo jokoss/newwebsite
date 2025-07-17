@@ -10,21 +10,16 @@ import {
   CardContent,
   CardActions,
   Chip,
-  Stack,
   Paper,
   Fade,
   Slide,
   useTheme,
-  useMediaQuery,
   CircularProgress,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { 
   ArrowForward as ArrowForwardIcon, 
   Science as ScienceIcon,
-  Verified as VerifiedIcon,
   Speed as SpeedIcon,
-  Support as SupportIcon,
   Security as SecurityIcon,
   TrendingUp as TrendingUpIcon,
   CheckCircle as CheckCircleIcon,

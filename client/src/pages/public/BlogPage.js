@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -11,7 +11,6 @@ import {
   CardMedia,
   Button,
   Chip,
-  Stack,
   CircularProgress,
   Alert,
   Pagination,
@@ -31,8 +30,8 @@ const BlogPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const theme = useTheme();
 
-  // Sample fallback blog posts data
-  const fallbackPosts = [
+  // Sample fallback blog posts data - memoized to prevent re-creation on every render
+  const fallbackPosts = useMemo(() => [
     {
       id: 1,
       title: "Introduction to Laboratory Testing Methods",
@@ -60,7 +59,7 @@ const BlogPage = () => {
       publishedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
       featuredImage: null
     }
-  ];
+  ], []);
 
   useEffect(() => {
     const fetchPosts = async () => {
