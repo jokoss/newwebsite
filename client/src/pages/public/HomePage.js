@@ -20,7 +20,8 @@ import {
   Slide,
   Avatar
 } from '@mui/material';
-import ApiErrorHandler from '../../components/utils/ApiErrorHandler';
+import ApiErrorHandler from '../../components/utils/ApiErrorHandler';\nimport RenderApiErrorHandler from '../../components/utils/RenderApiErrorHandler';
+import RenderApiErrorHandler from '../../components/utils/RenderApiErrorHandler';
 import { 
   ArrowForward as ArrowForwardIcon,
   ArrowBack as ArrowBackIcon,
@@ -45,7 +46,7 @@ const Hero = () => {
     setIsVisible(true);
   }, []);
 
-  return (
+    // Determine if we're on Render\n  const isRenderHosted = typeof window  ApiErrorHandler;\n\n  return (
     <Box
       sx={{
         position: 'relative',
@@ -358,7 +359,7 @@ const HomePage = () => {
         checkApiConnection(true);
       }, 2000 * (retryCount + 1)); // Exponential backoff
       
-      return () => clearTimeout(timer);
+        // Determine if we're on Render\n  const isRenderHosted = typeof window  ApiErrorHandler;\n\n  return () => clearTimeout(timer);
     }
   }, [error, retryCount]);
 
@@ -368,7 +369,7 @@ const HomePage = () => {
     checkApiConnection();
     
     // Cleanup function
-    return () => {
+      // Determine if we're on Render\n  const isRenderHosted = typeof window  ApiErrorHandler;\n\n  return () => {
       console.log('HomePage unmounting, cleaning up...');
     };
   }, []);
@@ -379,8 +380,16 @@ const HomePage = () => {
     checkApiConnection();
   };
 
-  return (
-    <ApiErrorHandler 
+  // Determine if we're on Render
+  const isRenderHosted = typeof window !== 'undefined' && 
+    (window.location.hostname.includes('render.com') || 
+     window.location.hostname.includes('onrender.com'));
+
+  // Use RenderApiErrorHandler for Render deployments, otherwise use regular ApiErrorHandler
+  const ErrorHandler = isRenderHosted ? RenderApiErrorHandler : ApiErrorHandler;
+
+    // Determine if we're on Render\n  const isRenderHosted = typeof window  ApiErrorHandler;\n\n  return (
+    <ErrorHandler 
       error={error} 
       errorMessage={errorMessage}
       onRetry={handleRetry}
@@ -481,7 +490,7 @@ const HomePage = () => {
           )}
         </Box>
       )}
-    </ApiErrorHandler>
+    </ErrorHandler>
   );
 };
 
