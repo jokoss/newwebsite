@@ -1,122 +1,72 @@
 @echo off
 REM Script to deploy the homepage fix to Render
-REM This script applies the fix for the blank homepage issue on Render
+REM This script commits the changes and pushes them to the repository
 
-echo === Starting Homepage Fix Deployment to Render ===
+echo === DEPLOYING HOMEPAGE FIX TO RENDER ===
+echo Current directory: %CD%
 
 REM Check if git is installed
 where git >nul 2>&1
 if %ERRORLEVEL% neq 0 (
-    echo Error: git is not installed. Please install git and try again.
-    exit /b 1
+  echo X Git is not installed. Please install git and try again.
+  exit /b 1
 )
 
-REM Check if we're in the right directory (project root)
-if not exist "client" (
-    echo Error: Please run this script from the project root directory.
-    exit /b 1
-)
-if not exist "server" (
-    echo Error: Please run this script from the project root directory.
-    exit /b 1
+REM Check if the current directory is a git repository
+if not exist ".git" (
+  echo X The current directory is not a git repository.
+  echo Please run this script from the root of your git repository.
+  exit /b 1
 )
 
-REM Make sure the update script exists
-if not exist "server\scripts\update-homepage-for-render.js" (
-    echo Error: Homepage update script not found.
-    echo Please make sure server\scripts\update-homepage-for-render.js exists.
+REM Check if the required files exist
+echo Checking if the required files exist...
+set REQUIRED_FILES=Dockerfile ensure-server-files.sh deploy-render-fix.sh render.yaml RENDER-HOMEPAGE-FIX-GUIDE.md
+
+for %%F in (%REQUIRED_FILES%) do (
+  if not exist "%%F" (
+    echo X %%F does not exist.
+    echo Please make sure all required files exist before deploying.
     exit /b 1
+  )
 )
 
-REM Create a new branch for the fix
-set BRANCH_NAME=fix/render-homepage-blank-issue
-echo Creating new branch: %BRANCH_NAME%
-git checkout -b %BRANCH_NAME%
+echo ✓ All required files exist.
 
-REM Run the update script to modify the HomePage component
-echo Applying HomePage fix...
-node server\scripts\update-homepage-for-render.js
+REM Check if there are any uncommitted changes
+git status --porcelain > git-status.tmp
+set /p GIT_STATUS=<git-status.tmp
+del git-status.tmp
 
-REM Add health endpoint to server/index.js if it doesn't exist
-findstr /c:"app.get('/api/health'" server\index.js >nul
-if %ERRORLEVEL% neq 0 (
-    echo Adding health endpoint to server\index.js...
+if not "%GIT_STATUS%"=="" (
+  echo There are uncommitted changes in the repository.
+  echo Do you want to commit these changes? (y/n)
+  set /p RESPONSE=
+  
+  if /i "%RESPONSE%"=="y" (
+    REM Add all changes
+    git add .
     
-    REM This is a simplified approach for Windows - it creates a temporary file
-    REM with the health endpoint and then uses findstr to merge it with the original file
-    
-    echo // Health check endpoint > health_endpoint.tmp
-    echo app.get('/api/health', (req, res) ^=^> { >> health_endpoint.tmp
-    echo   res.status(200).json({ >> health_endpoint.tmp
-    echo     status: 'healthy', >> health_endpoint.tmp
-    echo     timestamp: new Date().toISOString(), >> health_endpoint.tmp
-    echo     environment: process.env.NODE_ENV ^|^| 'development' >> health_endpoint.tmp
-    echo   }); >> health_endpoint.tmp
-    echo }); >> health_endpoint.tmp
-    echo. >> health_endpoint.tmp
-    
-    REM Find a good place to insert the health endpoint
-    findstr /n /c:"// API routes" server\index.js >nul
-    if %ERRORLEVEL% equ 0 (
-        REM This is a simplified approach - in a real scenario, you would need
-        REM a more robust solution to insert text at a specific line
-        echo Warning: Automatic insertion of health endpoint not supported in Windows batch.
-        echo Please add the health endpoint manually to server\index.js if needed.
-        echo See health_endpoint.tmp for the code to add.
-    ) else (
-        echo Warning: Could not find a good location to add health endpoint.
-        echo Please add the health endpoint manually to server\index.js if needed.
-        echo See health_endpoint.tmp for the code to add.
-    )
-)
-
-REM Ensure the ensure-server-files.sh script is included in the deployment
-if not exist "ensure-server-files.sh" (
-    echo Error: ensure-server-files.sh not found.
+    REM Commit the changes
+    git commit -m "Fix homepage blank screen issue on Render"
+    echo ✓ Changes committed.
+  ) else (
+    echo X Aborting deployment. Please commit your changes manually and try again.
     exit /b 1
-)
-
-REM Update render.yaml to include the fix
-if exist "render.yaml" (
-    echo Updating render.yaml to include the homepage fix...
-    
-    REM Check if the file already has the preDeployCommand
-    findstr /c:"preDeployCommand:" render.yaml >nul
-    if %ERRORLEVEL% equ 0 (
-        echo Warning: render.yaml already has a preDeployCommand.
-        echo Please update it manually to include:
-        echo   preDeployCommand: ./ensure-server-files.sh ^&^& node ./server/scripts/update-homepage-for-render.js
-    ) else (
-        echo Warning: Automatic modification of render.yaml not supported in Windows batch.
-        echo Please add the following line after buildCommand in render.yaml:
-        echo   preDeployCommand: ./ensure-server-files.sh ^&^& node ./server/scripts/update-homepage-for-render.js
-    )
+  )
 ) else (
-    echo Warning: render.yaml not found. You may need to configure Render manually.
+  echo ✓ No uncommitted changes.
 )
 
-REM Commit the changes
-echo Committing changes...
-git add server\scripts\update-homepage-for-render.js
-git add client\src\pages\public\HomePage.js
-git add server\index.js
-git add render.yaml
-git add deploy-homepage-fix-to-render.bat
-git add deploy-homepage-fix-to-render.sh
-git commit -m "Fix: Prevent blank homepage on Render deployment"
+REM Push the changes to the repository
+echo Pushing changes to the repository...
+git push
 
-REM Push to remote (optional - uncomment if you want to push automatically)
-REM echo Pushing changes to remote...
-REM git push -u origin %BRANCH_NAME%
+echo ✓ Changes pushed to the repository.
+echo The fix will be deployed to Render automatically if you have CI/CD set up.
+echo Otherwise, please deploy manually from the Render dashboard.
 
-echo === Homepage Fix Deployment Preparation Complete ===
-echo.
-echo Next steps:
-echo 1. Review the changes with 'git diff main'
-echo 2. Push the changes to your repository with 'git push -u origin %BRANCH_NAME%'
-echo 3. Create a pull request and merge to main
-echo 4. Deploy to Render from the main branch
-echo.
-echo The homepage should now display correctly on Render!
+echo === DEPLOYMENT COMPLETE ===
+echo See RENDER-HOMEPAGE-FIX-GUIDE.md for more information about the fix.
 
-pause
+exit /b 0

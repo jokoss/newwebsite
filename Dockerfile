@@ -38,6 +38,7 @@ RUN mkdir -p /app/server /app/client/build /app/uploads /app/data \
 
 # Copy built application with explicit handling of server subdirectories
 COPY --from=builder --chown=nextjs:nodejs /app/server ./server
+COPY --from=builder --chown=nextjs:nodejs /app/server/index.js ./server/index.js
 COPY --from=builder --chown=nextjs:nodejs /app/server/controllers ./server/controllers
 COPY --from=builder --chown=nextjs:nodejs /app/server/models ./server/models
 COPY --from=builder --chown=nextjs:nodejs /app/server/routes ./server/routes

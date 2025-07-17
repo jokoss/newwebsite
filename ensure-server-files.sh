@@ -9,6 +9,13 @@ echo "Current directory: $(pwd)"
 # Check if server/index.js exists
 if [ -f "/app/server/index.js" ]; then
   echo "✅ /app/server/index.js exists"
+  # Verify the file size to ensure it's not empty
+  FILE_SIZE=$(stat -c%s "/app/server/index.js" 2>/dev/null || stat -f%z "/app/server/index.js" 2>/dev/null)
+  if [ -n "$FILE_SIZE" ] && [ "$FILE_SIZE" -gt 100 ]; then
+    echo "✅ /app/server/index.js has valid content (size: $FILE_SIZE bytes)"
+  else
+    echo "⚠️ /app/server/index.js exists but may be empty or too small (size: $FILE_SIZE bytes)"
+  fi
 else
   echo "❌ /app/server/index.js does not exist"
   
