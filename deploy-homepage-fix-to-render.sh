@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Script to deploy the homepage fix to Render
-# This script will commit the changes to the HomePage.js file and push them to the repository
-# which will trigger the Render deployment
-
 echo "===== Deploying HomePage fix to Render ====="
 echo "This script will commit and push the changes to trigger a Render deployment."
 
@@ -23,14 +19,14 @@ fi
 if git diff --quiet client/src/pages/public/HomePage.js; then
     echo "No changes detected in HomePage.js. Have you made the necessary changes?"
     read -p "Continue anyway? (y/n): " continue_anyway
-    if [[ $continue_anyway != "y" ]]; then
+    if [[ "$continue_anyway" != "y" ]]; then
         echo "Deployment cancelled."
         exit 0
     fi
 fi
 
-# Add the changed file
-git add client/src/pages/public/HomePage.js
+# Add the changed files
+git add client/src/pages/public/HomePage.js RENDER-HOMEPAGE-FIX-GUIDE.md
 
 # Commit the changes
 echo "Committing changes..."
@@ -38,10 +34,7 @@ git commit -m "Fix: Update HomePage to handle API connection issues on Render"
 
 # Push to the repository
 echo "Pushing changes to remote repository..."
-git push
-
-# Check if the push was successful
-if [ $? -eq 0 ]; then
+if git push; then
     echo "===== Success! ====="
     echo "Changes have been pushed to the repository."
     echo "The Render deployment should be triggered automatically."

@@ -1,0 +1,68 @@
+FROM node:18-alpine
+
+# Install dumb-init for proper signal handling and bash for scripts
+RUN apk add --no-cache dumb-init bash curl
+
+# Create app directory and user
+WORKDIR /app
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Create directories with proper permissions
+RUN mkdir -p /app/server /app/client/build /app/uploads /app/data \
+    && chown -R nextjs:nodejs /app
+
+# Copy package files
+COPY package*.json ./
+COPY server/package*.json ./server/
+
+# Install root dependencies
+RUN npm ci && npm cache clean --force
+
+# Install server dependencies
+WORKDIR /app/server
+RUN npm ci && npm cache clean --force
+
+# Return to app directory
+WORKDIR /app
+
+# Copy server files
+COPY server ./server
+COPY ensure-server-files.sh ./
+COPY healthcheck.js ./
+
+# Copy client build
+COPY client/build ./client/build
+
+# Ensure uploads directory exists with proper permissions
+RUN mkdir -p /app/server/uploads /app/uploads \
+    && chown -R nextjs:nodejs /app/server/uploads /app/uploads
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 10000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:10000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Enable debugging
+ENV DEBUG=express:*,app:*
+ENV NODE_DEBUG=http,net,stream
+ENV PORT=10000
+
+# Start the application with improved error handling and debugging
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["/bin/sh", "-c", "echo 'Starting application with improved server file handling' && \
+     node healthcheck.js && \
+     sh ensure-server-files.sh && \
+     echo 'Checking server directory structure:' && \
+     find /app/server -type d | sort && \
+     echo 'Checking for critical server files:' && \
+     ls -la /app/server/index.js /app/server/models/index.js 2>/dev/null || echo 'Critical files missing' && \
+     echo 'Installing server dependencies if needed' && \
+     cd /app/server && npm install express cors dotenv sequelize pg pg-hstore && \
+     echo 'Starting server with full debugging' && \
+     NODE_DEBUG=http,net,stream node index.js"]

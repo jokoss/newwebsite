@@ -1,0 +1,79 @@
+name: Deploy Homepage Fix to Render
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'Dockerfile.api-minimal-enhanced'
+      - 'render-minimal-enhanced.yaml'
+      - 'client/src/pages/public/HomePage.js'
+      - '.github/workflows/deploy-homepage-fix.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd client && npm ci
+          cd ../server && npm ci
+          cd ..
+      
+      - name: Build client
+        run: |
+          cd client
+          npm run build
+          cd ..
+      
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          # If you have a Render API key, you can use curl to trigger a deploy
+          if [ -n "$RENDER_API_KEY" ]; then
+            echo "Triggering deploy using Render API"
+            
+            # Get the service ID from the environment variable or use a default
+            SERVICE_ID="${{ secrets.RENDER_SERVICE_ID }}"
+            
+            if [ -n "$SERVICE_ID" ]; then
+              # Trigger a deploy using the Render API
+              curl -X POST "https://api.render.com/v1/services/$SERVICE_ID/deploys" \
+                -H "Authorization: Bearer $RENDER_API_KEY" \
+                -H "Content-Type: application/json"
+              
+              echo "Deployment triggered via Render API"
+            else
+              echo "RENDER_SERVICE_ID is not set. Please add it to your GitHub repository secrets."
+              exit 1
+            fi
+          else
+            echo "RENDER_API_KEY is not set. Please add it to your GitHub repository secrets."
+            echo "Alternatively, set up a Render GitHub integration for automatic deployments."
+            
+            # Print instructions for manual deployment
+            echo "Manual deployment instructions:"
+            echo "1. Go to https://dashboard.render.com/"
+            echo "2. Create a new Web Service"
+            echo "3. Connect your GitHub repository"
+            echo "4. Select 'Docker' as the environment"
+            echo "5. Set the Docker file path to: Dockerfile.api-minimal-enhanced"
+            echo "6. Configure environment variables as specified in render-minimal-enhanced.yaml"
+            echo "7. Deploy the service"
+            
+            # This will show as a "failure" in GitHub Actions to alert the user
+            exit 1
+          fi

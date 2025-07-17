@@ -13,7 +13,10 @@
     "setup": "npm run install-server && npm run install-client && npm run install-functions",
     "docker-install": "npm run install-server && npm run install-client",
     "heroku-postbuild": "npm run build",
-    "netlify-build": "npm run install-client && cd client && npm run build"
+    "netlify-build": "npm run install-client && cd client && npm run build",
+    "render-build": "npm install && npm run install-server && npm run install-client && npm run build && node server/scripts/ensure-uploads-directory.js",
+    "render-start": "node server/index.js",
+    "render-debug": "NODE_DEBUG=http,net,stream node server/index.js"
   },
   "engines": {
     "node": ">=14.0.0"

@@ -1,0 +1,60 @@
+name: Deploy Minimal API Server to Render
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'api-server-minimal.js'
+      - 'Dockerfile.api-minimal'
+      - 'render-minimal.yaml'
+      - 'client/**'
+      - 'package.json'
+      - '.github/workflows/deploy-minimal-to-render.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build client
+        run: |
+          cd client
+          npm install
+          npm run build
+          cd ..
+
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          # Install render-cli if needed
+          if ! command -v render &> /dev/null; then
+            npm install -g @render/cli
+          fi
+          
+          # Deploy using render-cli
+          render blueprint apply
+        
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "Minimal API Server deployed successfully to Render!"
+          echo "Visit your Render dashboard to check the deployment status."
+          
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Failed to deploy Minimal API Server to Render."
+          echo "Check the GitHub Actions logs for more details."

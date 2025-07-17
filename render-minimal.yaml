@@ -1,0 +1,26 @@
+# Render configuration for the minimal API server
+services:
+  # A minimal API server service
+  - type: web
+    name: minimal-api-server
+    env: node
+    plan: free
+    buildCommand: npm install && cd client && npm install && npm run build && cd ..
+    startCommand: node api-server-minimal.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+    autoDeploy: true
+    # Uncomment the following lines if you need to specify a specific Node.js version
+    # buildFilter:
+    #   paths:
+    #     - api-server-minimal.js
+    #     - package.json
+    #     - client/**
+    # disk:
+    #   name: uploads
+    #   mountPath: /app/server/uploads
+    #   sizeGB: 1
