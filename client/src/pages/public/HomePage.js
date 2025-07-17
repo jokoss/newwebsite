@@ -542,7 +542,27 @@ const HomePage = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [apiStatus, setApiStatus] = useState(null);
   const [apiConnected, setApiConnected] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
   const maxRetries = 3;
+
+  // Function to safely fetch data with error handling
+  const fetchData = async (endpoint, setter, logPrefix) => {
+    console.log(`Fetching ${logPrefix} for homepage...`);
+    try {
+      const response = await api.get(endpoint, { timeout: 8000 });
+      if (response && response.data) {
+        setter(response.data);
+        return true;
+      }
+    } catch (err) {
+      console.error(`[error] Error fetching ${logPrefix}:`, err);
+      // Don't throw, just return false to indicate failure
+      return false;
+    }
+    return false;
+  };
 
   // Function to check API connectivity with enhanced error handling
   const checkApiConnection = async (isRetry = false) => {
@@ -554,6 +574,7 @@ const HomePage = () => {
     try {
       // Try multiple endpoints to ensure connectivity
       let response;
+      let connected = false;
 
       try {
         // First try the health endpoint
@@ -561,6 +582,7 @@ const HomePage = () => {
         console.log('API health check successful:', response.data);
         setApiStatus('healthy');
         setApiConnected(true);
+        connected = true;
       } catch (healthErr) {
         console.warn('Health endpoint failed, trying API root:', healthErr);
 
@@ -570,18 +592,28 @@ const HomePage = () => {
           console.log('API root check successful:', response.data);
           setApiStatus('available');
           setApiConnected(true);
+          connected = true;
         } catch (rootErr) {
           // Both endpoints failed, but we'll still show the page
           console.error('API root check failed:', rootErr);
           setApiStatus('error');
           setApiConnected(false);
-          // Don't set error to true here to prevent blank page
         }
+      }
+
+      // Only try to fetch data if we have a connection
+      if (connected) {
+        // Fetch data in parallel
+        await Promise.allSettled([
+          fetchData('/categories', setCategories, 'categories'),
+          fetchData('/partners', setPartners, 'partners'),
+          fetchData('/blog/posts', setBlogPosts, 'blog posts')
+        ]);
       }
 
       setLoading(false);
     } catch (err) {
-      console.error('API connection error:', err);
+      console.error('[error]', err);
 
       // Detailed error logging for debugging
       if (err.response) {
