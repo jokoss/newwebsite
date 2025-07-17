@@ -251,7 +251,9 @@ If you see an error like this during deployment:
 ==> Exited with status 127
 ```
 
-This occurs because the Alpine Linux image used in the Dockerfile doesn't include bash by default. The solution is to add bash to the production stage of your Dockerfile:
+This occurs because the Alpine Linux image used in the Dockerfile doesn't include bash by default. There are two ways to solve this:
+
+**Option 1: Add bash to the Docker image**
 
 ```dockerfile
 # Production stage
@@ -261,7 +263,17 @@ FROM node:18-alpine AS production
 RUN apk add --no-cache dumb-init bash
 ```
 
-This ensures that bash is available when the container tries to run bash scripts like `render-setup.sh`.
+**Option 2: Make your scripts compatible with sh instead of bash**
+
+1. Change the shebang in your scripts from `#!/bin/bash` to `#!/bin/sh`
+2. Modify any bash-specific features to be sh-compatible
+3. Update the CMD in your Dockerfile to use sh instead of bash:
+
+```dockerfile
+CMD ["/bin/sh", "-c", "sh render-setup.sh && node server/index.js"]
+```
+
+Option 2 is more lightweight as it doesn't require installing additional packages in your Docker image.
 
 #### Other Docker Build Failures
 
