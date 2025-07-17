@@ -575,33 +575,28 @@ const Footer = () => {
                     Trusted & Certified
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                    {certifications.map((certification, index) => {
-                      // Ensure certification is not null or undefined before accessing properties
-                      if (!certification) return null;
-                      
-                      return (
-                        <Chip 
-                          key={certification.id || index}
-                          label={certification.name || 'Certification'}
-                          size="small"
-                          component={certification.externalUrl ? "a" : "div"}
-                          href={certification.externalUrl || undefined}
-                          target={certification.externalUrl ? "_blank" : undefined}
-                          rel={certification.externalUrl ? "noopener noreferrer" : undefined}
-                          clickable={!!certification.externalUrl}
-                          sx={{ 
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            color: 'white',
-                            border: '1px solid rgba(255, 255, 255, 0.2)',
-                            textDecoration: 'none',
-                            '&:hover': certification.externalUrl ? {
-                              background: 'rgba(255, 255, 255, 0.2)',
-                              transform: 'translateY(-1px)'
-                            } : {}
-                          }} 
-                        />
-                      );
-                    })}
+                    {certifications.map((certification, index) => (
+                      <Chip 
+                        key={certification?.id || index}
+                        label={certification?.name || 'Certification'}
+                        size="small"
+                        component={certification?.externalUrl ? "a" : "div"}
+                        href={certification?.externalUrl || undefined}
+                        target={certification?.externalUrl ? "_blank" : undefined}
+                        rel={certification?.externalUrl ? "noopener noreferrer" : undefined}
+                        clickable={!!certification?.externalUrl}
+                        sx={{ 
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          color: 'white',
+                          border: '1px solid rgba(255, 255, 255, 0.2)',
+                          textDecoration: 'none',
+                          '&:hover': certification?.externalUrl ? {
+                            background: 'rgba(255, 255, 255, 0.2)',
+                            transform: 'translateY(-1px)'
+                          } : {}
+                        }} 
+                      />
+                    ))}
                   </Box>
                 </Box>
               )}

@@ -7,6 +7,10 @@ import { useAuth } from './context/AuthContext';
 import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/layout/AdminLayout';
 
+// Error Handling
+import ErrorBoundary from './components/utils/ErrorBoundary';
+import FallbackHomePage from './pages/public/FallbackHomePage';
+
 // Public Pages
 import HomePage from './pages/public/HomePage';
 import ServicesPage from './pages/public/ServicesPage';
@@ -63,7 +67,13 @@ function App() {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<HomePage />} />
+        <Route index element={
+          <ErrorBoundary
+            fallback={(error) => <FallbackHomePage error={error} />}
+          >
+            <HomePage />
+          </ErrorBoundary>
+        } />
         <Route path="services" element={<ServicesPage />} />
         <Route path="services/:categoryId" element={<ServiceCategoryPage />} />
         <Route path="about" element={<AboutPage />} />

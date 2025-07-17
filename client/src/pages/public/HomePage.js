@@ -21,7 +21,6 @@ import {
   Avatar
 } from '@mui/material';
 import ApiErrorHandler from '../../components/utils/ApiErrorHandler';
-import RenderApiErrorHandler from '../../components/utils/RenderApiErrorHandler';
 import { 
   ArrowForward as ArrowForwardIcon,
   ArrowBack as ArrowBackIcon,
@@ -380,16 +379,8 @@ const HomePage = () => {
     checkApiConnection();
   };
 
-  // Determine if we're on Render
-  const isRenderHosted = typeof window !== 'undefined' && 
-    (window.location.hostname.includes('render.com') || 
-     window.location.hostname.includes('onrender.com'));
-
-  // Use RenderApiErrorHandler for Render deployments, otherwise use regular ApiErrorHandler
-  const ErrorHandler = isRenderHosted ? RenderApiErrorHandler : ApiErrorHandler;
-
   return (
-    <ErrorHandler 
+    <ApiErrorHandler 
       error={error} 
       errorMessage={errorMessage}
       onRetry={handleRetry}
@@ -490,7 +481,7 @@ const HomePage = () => {
           )}
         </Box>
       )}
-    </ErrorHandler>
+    </ApiErrorHandler>
   );
 };
 
