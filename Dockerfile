@@ -56,4 +56,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 # Start the application
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["/bin/sh", "-c", "bash render-setup.sh && node server/index.js"]
+CMD ["/bin/sh", "-c", "sh render-setup.sh && node server/index.js"]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Render pre-start setup script
 # This script runs before the application starts on Render
 
@@ -83,6 +83,8 @@ fi
 echo "=== Setup Complete ==="
 echo "Client build directory: $(ls -la /opt/render/project/src/client/build | wc -l) files"
 echo "Uploads directory: $UPLOADS_DIR"
-echo "Database URL: ${DATABASE_URL:0:10}... (truncated for security)"
+# Truncate DATABASE_URL for security (sh-compatible way)
+DB_URL_START=$(echo "$DATABASE_URL" | cut -c1-10)
+echo "Database URL: $DB_URL_START... (truncated for security)"
 
 exit 0
