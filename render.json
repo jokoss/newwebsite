@@ -1,0 +1,53 @@
+{
+  "services": [
+    {
+      "type": "web",
+      "name": "thelma-labs-web",
+      "env": "node",
+      "plan": "starter",
+      "buildCommand": "npm run render-build",
+      "startCommand": "npm run render-start",
+      "healthCheckPath": "/api/health",
+      "autoDeploy": true,
+      "envVars": [
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "PORT",
+          "value": "10000"
+        },
+        {
+          "key": "JWT_EXPIRES_IN",
+          "value": "7d"
+        },
+        {
+          "key": "JWT_SECRET",
+          "generateValue": true
+        },
+        {
+          "key": "FRONTEND_URL",
+          "fromService": {
+            "name": "thelma-labs-web",
+            "type": "web",
+            "property": "url"
+          }
+        },
+        {
+          "key": "ALLOWED_ORIGINS",
+          "fromService": {
+            "name": "thelma-labs-web",
+            "type": "web",
+            "property": "url"
+          }
+        }
+      ],
+      "disk": {
+        "name": "uploads",
+        "mountPath": "/opt/render/project/src/server/uploads",
+        "sizeGB": 1
+      }
+    }
+  ]
+}
