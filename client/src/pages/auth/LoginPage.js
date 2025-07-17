@@ -19,7 +19,9 @@ import {
   Visibility, 
   VisibilityOff, 
   LockOutlined as LockIcon,
-  Security as SecurityIcon
+  Security as SecurityIcon,
+  Refresh as RefreshIcon,
+  WifiOff as OfflineIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 
@@ -30,8 +32,16 @@ const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [isCheckingConnectivity, setIsCheckingConnectivity] = useState(false);
   
-  const { login, isAuthenticated, error: authError, clearError } = useAuth();
+  const { 
+    login, 
+    isAuthenticated, 
+    error: authError, 
+    clearError, 
+    apiStatus, 
+    diagnoseAuthIssues 
+  } = useAuth();
   const navigate = useNavigate();
 
   // Clear auth errors when component mounts or unmounts
@@ -64,6 +74,23 @@ const LoginPage = () => {
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const checkConnectivity = async () => {
+    setIsCheckingConnectivity(true);
+    try {
+      const diagnostics = await diagnoseAuthIssues();
+      setIsCheckingConnectivity(false);
+      
+      if (!diagnostics.connectivity.online) {
+        setError(`Cannot connect to the server. Status: ${diagnostics.connectivity.error || 'Offline'}`);
+      } else {
+        setError('');
+      }
+    } catch (err) {
+      setIsCheckingConnectivity(false);
+      setError('Failed to check connectivity');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -157,6 +184,33 @@ const LoginPage = () => {
                 Admin Login
               </Typography>
             </Box>
+            
+            {!apiStatus.online && apiStatus.checked && (
+              <Alert 
+                severity="warning" 
+                sx={{ 
+                  width: '100%', 
+                  mb: 3,
+                  '& .MuiAlert-message': {
+                    fontWeight: 500
+                  }
+                }}
+                action={
+                  <Button 
+                    color="inherit" 
+                    size="small" 
+                    onClick={checkConnectivity}
+                    disabled={isCheckingConnectivity}
+                    startIcon={isCheckingConnectivity ? <CircularProgress size={16} /> : <RefreshIcon />}
+                  >
+                    Retry
+                  </Button>
+                }
+                icon={<OfflineIcon />}
+              >
+                Server connection issue detected. This may be temporary during deployment.
+              </Alert>
+            )}
             
             {error && (
               <Alert 

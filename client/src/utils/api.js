@@ -70,11 +70,6 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // Enable client-side caching for GET requests
-  cache: {
-    maxAge: 15 * 60 * 1000, // 15 minutes
-    exclude: { query: false }
-  },
   // Retry configuration
   retry: 3,
   retryDelay: (retryCount) => {
@@ -85,6 +80,8 @@ const api = axios.create({
 // Log configuration in development
 if (process.env.NODE_ENV !== 'production') {
   console.log('API configured with baseURL:', api.defaults.baseURL);
+} else {
+  console.log('Production API configured with baseURL:', api.defaults.baseURL);
 }
 
 // Add a request interceptor to include auth token
@@ -94,6 +91,15 @@ api.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    
+    // Add timestamp to prevent caching issues
+    if (config.method === 'get') {
+      config.params = {
+        ...config.params,
+        _t: Date.now()
+      };
+    }
+    
     return config;
   },
   (error) => {
@@ -167,7 +173,8 @@ api.interceptors.response.use(
       // Token expired or invalid
       localStorage.removeItem('token');
       // Redirect to login page if not already there
-      if (!window.location.pathname.includes('/login')) {
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        console.log('Authentication error detected, redirecting to login');
         window.location.href = '/login';
       }
     }
@@ -304,6 +311,29 @@ export const checkApiConnectivity = async () => {
     return {
       online: false,
       error: error.message
+    };
+  }
+};
+
+// Helper function to check authentication status
+export const checkAuthStatus = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return { authenticated: false, reason: 'No token found' };
+    }
+    
+    const response = await api.get('/auth/me');
+    return {
+      authenticated: true,
+      user: response.data.user
+    };
+  } catch (error) {
+    return {
+      authenticated: false,
+      error: error.message,
+      status: error.response?.status,
+      reason: error.response?.data?.message || 'Authentication check failed'
     };
   }
 };
