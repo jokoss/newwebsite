@@ -45,6 +45,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/client-error-handler.js ./client/build/
 COPY --from=builder --chown=nextjs:nodejs /app/api-diagnostic.js ./client/build/
 COPY --from=builder --chown=nextjs:nodejs /app/healthcheck.js ./
+COPY --from=builder --chown=nextjs:nodejs /app/deploy-render-fix.sh ./
+
+# Make deploy script executable
+RUN chmod +x ./deploy-render-fix.sh
 
 # Install production dependencies
 WORKDIR /app
