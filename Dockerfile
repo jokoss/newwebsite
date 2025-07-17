@@ -4,7 +4,7 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first
 COPY package*.json ./
 COPY client/package*.json ./client/
 COPY server/package*.json ./server/
@@ -15,8 +15,20 @@ RUN mkdir -p server client
 # Install dependencies
 RUN npm run docker-install
 
-# Copy source code
-COPY . .
+# Copy ALL source code explicitly
+COPY client/ ./client/
+COPY server/ ./server/
+COPY *.js ./
+COPY *.sh ./
+COPY *.json ./
+
+# Debug: Show what was copied
+RUN echo "=== BUILDER STAGE DEBUG ===" && \
+    ls -la . && \
+    echo "=== SERVER DIRECTORY ===" && \
+    ls -la ./server/ && \
+    echo "=== SERVER INDEX.JS CHECK ===" && \
+    if [ -f ./server/index.js ]; then echo "✅ server/index.js EXISTS"; else echo "❌ server/index.js MISSING"; fi
 
 # Build the React application
 RUN cd client && npm run build
