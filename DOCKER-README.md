@@ -100,7 +100,37 @@ These scripts will:
 3. Start the containers
 4. Verify the application is running
 5. Check the health endpoint
-6. Provide a summary of the test results
+6. Check dependencies in the container
+7. Provide a summary of the test results
+
+### Additional Testing Scripts
+
+We've also provided specialized scripts for more detailed testing:
+
+#### Check API Health
+
+The `check-api-health.js` script tests the API health endpoint:
+
+```bash
+# Test local API
+node check-api-health.js http://localhost:3000/api/health
+
+# Test deployed API
+node check-api-health.js https://your-render-app.onrender.com/api/health
+```
+
+#### Check Dependencies
+
+The `check-dependencies.sh` script verifies that all required dependencies are installed in the Docker container:
+
+```bash
+# Copy to container and run
+docker cp check-dependencies.sh your-container-id:/app/
+docker exec your-container-id chmod +x /app/check-dependencies.sh
+docker exec your-container-id /app/check-dependencies.sh
+```
+
+This script is automatically run as part of the `test-docker-locally.sh` script.
 
 ## Deployment Options
 
@@ -200,6 +230,30 @@ When deploying to Render, you'll need to configure a disk to persist uploaded fi
 
 ## Troubleshooting
 
+### Recent Improvements
+
+We've made several improvements to the Docker setup to address common issues:
+
+1. **Enhanced Dependency Management**:
+   - Server dependencies are now installed separately to ensure they're available
+   - Added fallback mechanisms to install missing dependencies
+   - Added scripts to verify dependency installation
+
+2. **Improved Directory Handling**:
+   - Added scripts to try multiple possible directory locations
+   - Created symbolic links to persistent storage when available
+   - Enhanced permissions management for directories
+
+3. **Better Error Recovery**:
+   - Added fallback mechanisms to ensure the server can start even if setup steps fail
+   - Created scripts to check for and fix missing server files
+   - Added detailed logging for better troubleshooting
+
+4. **Render-Specific Optimizations**:
+   - Created minimal setup scripts for Render deployment
+   - Added support for Render's persistent disk
+   - Improved error handling for Render's environment
+
 ### Common Issues
 
 #### Docker Build Fails with "can't cd to server: No such file or directory"
@@ -274,6 +328,33 @@ CMD ["/bin/sh", "-c", "sh render-setup.sh && node server/index.js"]
 ```
 
 Option 2 is more lightweight as it doesn't require installing additional packages in your Docker image.
+
+#### Missing Dependencies
+
+If you see errors like this:
+
+```
+Error: Cannot find module 'express'
+```
+
+This indicates that Node.js dependencies aren't installed correctly. We've added several fixes for this:
+
+1. **Check if dependencies are installed**:
+   ```bash
+   docker exec your-container-id /app/check-dependencies.sh
+   ```
+
+2. **Install missing dependencies manually**:
+   ```bash
+   docker exec your-container-id npm install express cors dotenv
+   ```
+
+3. **Use the ensure-server-files.sh script**:
+   ```bash
+   docker exec your-container-id sh /app/ensure-server-files.sh
+   ```
+
+This script will check for missing dependencies and install them if needed.
 
 #### Other Docker Build Failures
 

@@ -81,6 +81,19 @@ else
     docker-compose logs app
 fi
 
+# Check dependencies in the container
+echo -e "${YELLOW}Checking dependencies in the container...${NC}"
+echo -e "${YELLOW}Copying dependency check script to container...${NC}"
+container_id=$(docker-compose ps -q app)
+if [ -n "$container_id" ]; then
+    docker cp check-dependencies.sh $container_id:/app/
+    docker exec $container_id chmod +x /app/check-dependencies.sh
+    echo -e "${YELLOW}Running dependency check script...${NC}"
+    docker exec $container_id /app/check-dependencies.sh
+else
+    echo -e "${RED}Could not find container ID. Make sure the container is running.${NC}"
+fi
+
 echo ""
 echo -e "${YELLOW}=== Docker Test Summary ===${NC}"
 echo -e "${GREEN}✓${NC} Docker and Docker Compose are installed"
