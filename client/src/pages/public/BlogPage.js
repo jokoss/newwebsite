@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 import {
+  Box,
   Container,
   Typography,
-  Box,
   Grid,
   Card,
   CardContent,
   CardMedia,
   Button,
-  Divider,
-  Pagination,
+  Chip,
+  Stack,
   CircularProgress,
   Alert,
-  useTheme,
-  Chip
+  Pagination,
+  useTheme
 } from '@mui/material';
 import { 
   CalendarToday as CalendarIcon,
@@ -91,7 +91,7 @@ const BlogPage = () => {
     };
 
     fetchPosts();
-  }, [page]);
+  }, [page, fallbackPosts]);
 
   const handlePageChange = (event, value) => {
     setPage(value);

@@ -6,36 +6,29 @@ import {
   Typography,
   Button,
   Grid,
-  Paper,
   Card,
-  CardMedia,
   CardContent,
   CardActions,
-  Divider,
-  useTheme,
-  CircularProgress,
   Chip,
-  IconButton,
+  Stack,
+  Paper,
   Fade,
   Slide,
-  Avatar
+  useTheme,
+  useMediaQuery,
+  CircularProgress,
 } from '@mui/material';
-import ApiErrorHandler from '../../components/utils/ApiErrorHandler';
-import {
-  ArrowForward as ArrowForwardIcon,
-  ArrowBack as ArrowBackIcon,
+import { useNavigate } from 'react-router-dom';
+import { 
+  ArrowForward as ArrowForwardIcon, 
   Science as ScienceIcon,
+  Verified as VerifiedIcon,
   Speed as SpeedIcon,
+  Support as SupportIcon,
   Security as SecurityIcon,
   TrendingUp as TrendingUpIcon,
   CheckCircle as CheckCircleIcon,
-  StarRate as StarRateIcon,
-  Link as LinkIcon,
-  Refresh as RefreshIcon,
-  Warning as WarningIcon
 } from '@mui/icons-material';
-import axios from 'axios';
-import api from '../../utils/api';
 
 // Modern, clean Hero section with minimal design
 const Hero = () => {
