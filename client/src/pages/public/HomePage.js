@@ -673,7 +673,7 @@ const HomePage = () => {
 
   // Render the main content or fallback content based on state
   return (
-    <ApiErrorHandler>
+    <div>
       {hasError ? (
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" color="error" gutterBottom>
@@ -695,7 +695,7 @@ const HomePage = () => {
           <CtaSection />
         </>
       )}
-    </ApiErrorHandler>
+    </div>
   );
 };
 
