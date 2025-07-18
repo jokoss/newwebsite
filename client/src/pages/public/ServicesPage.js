@@ -109,7 +109,7 @@ const ServicesPage = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [categories.length, fallbackCategories]);
 
   // Elegant Hero section with sophisticated design
   const HeroSection = () => (

@@ -10,10 +10,8 @@ import {
   IconButton,
   Divider,
   useTheme,
-  Avatar,
   Chip,
   Button,
-  useMediaQuery,
   Paper
 } from '@mui/material';
 import {
@@ -33,7 +31,6 @@ const Footer = () => {
   const theme = useTheme();
   const currentYear = new Date().getFullYear();
   const [certifications, setCertifications] = useState([]);
-  const [error, setError] = useState(null);
 
   // Sample fallback certifications data
   const fallbackCertifications = [
@@ -62,14 +59,13 @@ const Footer = () => {
         setCertifications(certificationsData);
       } catch (error) {
         console.error('Error fetching certifications:', error);
-        setError(error.message);
         // Use fallback data when there's an error
         setCertifications(fallbackCertifications);
       }
     };
 
     fetchCertifications();
-  }, []);
+  }, [fallbackCertifications]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -77,10 +73,6 @@ const Footer = () => {
       behavior: 'smooth'
     });
   };
-
-  // Check if the viewport is mobile
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
 
   return (
     <Box

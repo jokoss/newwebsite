@@ -70,38 +70,9 @@ export const AuthProvider = ({ children }) => {
     }, 60000); // Check every minute
     
     return () => clearInterval(interval);
-  }, [token, lastActivity]);
+  }, [token, lastActivity, SESSION_TIMEOUT, handleLogout]);
 
-  useEffect(() => {
-    // If we have a token, fetch the user's profile
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      fetchCurrentUser();
-    } else {
-      setLoading(false);
-    }
-  }, [token]);
-
-  // Set up axios interceptor for handling token expiration
-  useEffect(() => {
-    const interceptor = axios.interceptors.response.use(
-      response => response,
-      error => {
-        if (error.response && error.response.status === 401) {
-          // Token expired or invalid
-          if (token) {
-            console.log('Token expired or invalid, logging out');
-            handleLogout(true);
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
-    
-    return () => axios.interceptors.response.eject(interceptor);
-  }, [token]);
-
-  const fetchCurrentUser = async () => {
+  const fetchCurrentUser = useCallback(async () => {
     try {
       const response = await api.get('/auth/me');
       setCurrentUser(response.data.user);
@@ -135,7 +106,36 @@ export const AuthProvider = ({ children }) => {
       handleLogout();
       setLoading(false);
     }
-  };
+  }, [handleLogout]);
+
+  useEffect(() => {
+    // If we have a token, fetch the user's profile
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      fetchCurrentUser();
+    } else {
+      setLoading(false);
+    }
+  }, [token, fetchCurrentUser]);
+
+  // Set up axios interceptor for handling token expiration
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response && error.response.status === 401) {
+          // Token expired or invalid
+          if (token) {
+            console.log('Token expired or invalid, logging out');
+            handleLogout(true);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+    
+    return () => axios.interceptors.response.eject(interceptor);
+  }, [token, handleLogout]);
 
   const login = async (username, password) => {
     try {

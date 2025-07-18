@@ -19,7 +19,6 @@ import {
   Tooltip,
   useMediaQuery,
   Fade,
-  Badge,
   Chip
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -36,7 +35,6 @@ import {
   ChevronLeft as ChevronLeftIcon,
   Public as PublicIcon,
   Settings as SettingsIcon,
-  Notifications as NotificationsIcon,
   Close as CloseIcon,
   Article as ArticleIcon
 } from '@mui/icons-material';
@@ -52,7 +50,6 @@ const AdminLayout = () => {
   
   // Use MUI's useMediaQuery for better responsive behavior
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   
   // Get initial drawer state from localStorage or default based on screen size
@@ -233,8 +230,6 @@ const AdminLayout = () => {
           </Typography>
           
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {/* Notification icon removed as requested */}
-            
             <Tooltip title="View Website">
               <IconButton 
                 color="inherit" 
