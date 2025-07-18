@@ -7,7 +7,7 @@ import { useAuth } from './context/AuthContext';
 import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/layout/AdminLayout';
 
-// Error Handling
+// Error Handling - Fixed import path for Railway Docker compatibility
 import ErrorBoundary from './components/utils/ErrorBoundary.js';
 import FallbackHomePage from './pages/public/FallbackHomePage';
 
