@@ -97,10 +97,8 @@ const ServicesPage = () => {
         console.error('Error details:', err.response?.data);
         
         // Use fallback data when there's an error
-        if (categories.length === 0) {
-          console.log('Using fallback categories data due to API error');
-          setCategories(fallbackCategories);
-        }
+        console.log('Using fallback categories data due to API error');
+        setCategories(fallbackCategories);
         
         setError('');  // Don't show error to user since we're using fallback data
       } finally {
@@ -109,7 +107,8 @@ const ServicesPage = () => {
     };
 
     fetchCategories();
-  }, [categories.length, fallbackCategories]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intentionally empty - we want this to run only once on mount
 
   // Elegant Hero section with sophisticated design
   const HeroSection = () => (

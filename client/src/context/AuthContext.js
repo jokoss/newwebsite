@@ -19,6 +19,28 @@ export const AuthProvider = ({ children }) => {
   // Session timeout in milliseconds (30 minutes)
   const SESSION_TIMEOUT = 30 * 60 * 1000;
 
+  const handleLogout = useCallback(async (expired = false) => {
+    try {
+      if (token) {
+        // Call the server logout endpoint
+        await api.post('/auth/logout');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clean up regardless of server response
+      localStorage.removeItem('token');
+      localStorage.removeItem('cached_user');
+      delete axios.defaults.headers.common['Authorization'];
+      setToken(null);
+      setCurrentUser(null);
+      
+      if (expired) {
+        setError('Your session has expired. Please login again.');
+      }
+    }
+  }, [token]);
+
   // Update last activity timestamp on user interaction
   useEffect(() => {
     const updateActivity = () => setLastActivity(Date.now());
@@ -193,28 +215,6 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
-
-  const handleLogout = useCallback(async (expired = false) => {
-    try {
-      if (token) {
-        // Call the server logout endpoint
-        await api.post('/auth/logout');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Clean up regardless of server response
-      localStorage.removeItem('token');
-      localStorage.removeItem('cached_user');
-      delete axios.defaults.headers.common['Authorization'];
-      setToken(null);
-      setCurrentUser(null);
-      
-      if (expired) {
-        setError('Your session has expired. Please login again.');
-      }
-    }
-  }, [token]);
 
   const logout = () => handleLogout(false);
 

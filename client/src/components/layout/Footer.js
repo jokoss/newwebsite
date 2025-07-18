@@ -32,15 +32,15 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [certifications, setCertifications] = useState([]);
 
-  // Sample fallback certifications data
-  const fallbackCertifications = [
-    { id: 1, name: "ISO 9001", externalUrl: "https://www.iso.org/iso-9001-quality-management.html" },
-    { id: 2, name: "ISO 17025", externalUrl: "https://www.iso.org/ISO-IEC-17025-testing-and-calibration-laboratories.html" },
-    { id: 3, name: "AASHTO", externalUrl: null }
-  ];
-
   // Fetch certifications on component mount
   useEffect(() => {
+    // Sample fallback certifications data
+    const fallbackCertifications = [
+      { id: 1, name: "ISO 9001", externalUrl: "https://www.iso.org/iso-9001-quality-management.html" },
+      { id: 2, name: "ISO 17025", externalUrl: "https://www.iso.org/ISO-IEC-17025-testing-and-calibration-laboratories.html" },
+      { id: 3, name: "AASHTO", externalUrl: null }
+    ];
+
     const fetchCertifications = async () => {
       try {
         // Add a timeout to prevent hanging requests
@@ -65,7 +65,7 @@ const Footer = () => {
     };
 
     fetchCertifications();
-  }, [fallbackCertifications]);
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
