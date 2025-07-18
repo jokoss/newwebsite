@@ -10,7 +10,6 @@ import {
   Container,
   Button,
   MenuItem,
-  useMediaQuery,
   useTheme,
   Fade,
   Avatar,
@@ -40,7 +39,6 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Handle scroll effect for glass morphism
   useEffect(() => {
