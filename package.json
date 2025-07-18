@@ -17,7 +17,7 @@
     "render-build": "npm install && npm run install-server && npm run install-client && npm run build",
     "render-start": "node start-server.js",
     "render-start-direct": "node server/index.js",
-    "render-start-absolute": "node /opt/render/project/server/index.js",
+    "render-start-absolute": "node /opt/render/project/src/server/index.js",
     "render-start-fallback": "cd server && node index.js",
     "render-debug": "NODE_DEBUG=http,net,stream node start-server.js"
   },

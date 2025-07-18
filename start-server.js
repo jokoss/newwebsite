@@ -19,26 +19,27 @@ console.log('📍 __dirname:', __dirname);
 
 // Possible server file locations to check
 const possiblePaths = [
-  // PRIORITY: Render-specific absolute paths (most likely to work)
-  '/opt/render/project/server/index.js',
+  // PRIORITY: Correct Render absolute path (server is in /src directory)
+  '/opt/render/project/src/server/index.js',
   
-  // If we're in /src directory, go up one level (common Render scenario)
-  path.join(process.cwd(), '..', 'server', 'index.js'),
-  path.join(__dirname, '..', 'server', 'index.js'),
-  
-  // Standard relative paths from current directory
+  // Standard relative paths from current directory (/opt/render/project/src)
   path.join(process.cwd(), 'server', 'index.js'),
   path.join(__dirname, 'server', 'index.js'),
   
-  // Alternative Render absolute paths
-  '/opt/render/project/src/server/index.js',
+  // Simple relative path
+  './server/index.js',
+  
+  // Alternative absolute paths
+  '/opt/render/project/server/index.js',
+  
+  // If we're in /src directory, go up one level (fallback)
+  path.join(process.cwd(), '..', 'server', 'index.js'),
+  path.join(__dirname, '..', 'server', 'index.js'),
   
   // Fallback server.js locations
   path.join(process.cwd(), 'server.js'),
   path.join(__dirname, 'server.js'),
-  path.join(process.cwd(), '..', 'server.js'),
-  
-  // Additional absolute fallbacks
+  '/opt/render/project/src/server.js',
   '/opt/render/project/server.js'
 ];
 
