@@ -8,7 +8,7 @@ import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/layout/AdminLayout';
 
 // Error Handling
-import ErrorBoundary from './components/utils/ErrorBoundary';
+import ErrorBoundary from './components/utils/ErrorBoundary.js';
 import FallbackHomePage from './pages/public/FallbackHomePage';
 
 // Public Pages
