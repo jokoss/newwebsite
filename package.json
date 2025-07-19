@@ -7,9 +7,9 @@
     "node": ">=18 <19"
   },
   "scripts": {
-    "build": "cd client && npm run build",
-    "start": "node api-server-minimal.js",
-    "postinstall": "cd client && npm install"
+    "postinstall": "cd client && npm install",
+    "build": "echo 'Using pre-built client files - skipping build step'",
+    "start": "node api-server-minimal.js"
   },
   "dependencies": {
     "concurrently": "^8.0.1",

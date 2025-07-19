@@ -21,7 +21,7 @@ logs
 *.log
 
 # Build directories
-client/build/
+# client/build/ - Allow committing build for Railway deployment
 client/dist/
 
 # Dependency directories
