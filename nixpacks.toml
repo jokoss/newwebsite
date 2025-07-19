@@ -5,10 +5,10 @@ nixPkgs = ["nodejs_22", "npm-9_x"]
 cmds = ["npm ci"]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = ["npm run install-server"]
 
 [start]
-cmd = "npm start"
+cmd = "node server/index.js"
 
 [variables]
 NODE_ENV = "production"

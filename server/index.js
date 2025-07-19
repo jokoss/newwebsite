@@ -14,8 +14,12 @@ const blogRoutes = require('./routes/blog.routes');
 // Ensure uploads directory exists
 require('./scripts/ensure-uploads-directory');
 
-// Debug client build path
-require('./scripts/debug-client-build');
+// Debug client build path (safe version for Railway)
+try {
+  require('./scripts/debug-client-build');
+} catch (error) {
+  console.log('⚠️ Client build debug skipped (files not available):', error.message);
+}
 
 // Initialize Express app
 const app = express();
@@ -92,9 +96,23 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
-app.use(express.static(process.env.NODE_ENV === 'production' 
-  ? './client/build' 
-  : '../client/build')); // Serve static files from the React app
+
+// Serve static files from React app (Railway-safe)
+try {
+  const path = require('path');
+  const clientBuildPath = process.env.NODE_ENV === 'production' 
+    ? path.resolve(__dirname, './client/build')
+    : path.resolve(__dirname, '../client/build');
+  
+  if (require('fs').existsSync(clientBuildPath)) {
+    app.use(express.static(clientBuildPath));
+    console.log(`✅ Serving static files from: ${clientBuildPath}`);
+  } else {
+    console.log(`⚠️ Client build directory not found: ${clientBuildPath}`);
+  }
+} catch (error) {
+  console.log('⚠️ Static file serving setup failed:', error.message);
+}
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -179,14 +197,31 @@ app.get('/api/diagnostics', (req, res) => {
     });
 });
 
-// Serve React app for all other routes
+// Serve React app for all other routes (Railway-safe)
 app.get('*', (req, res) => {
-  const path = require('path');
-  const clientBuildPath = process.env.NODE_ENV === 'production'
-    ? path.resolve(__dirname, './client/build/index.html')
-    : path.resolve(__dirname, '../client/build/index.html');
-  
-  res.sendFile(clientBuildPath);
+  try {
+    const path = require('path');
+    const clientBuildPath = process.env.NODE_ENV === 'production'
+      ? path.resolve(__dirname, './client/build/index.html')
+      : path.resolve(__dirname, '../client/build/index.html');
+    
+    if (require('fs').existsSync(clientBuildPath)) {
+      res.sendFile(clientBuildPath);
+    } else {
+      // Fallback if client build doesn't exist
+      res.status(200).json({ 
+        message: 'Analytical Testing Laboratory API Server',
+        status: 'running',
+        note: 'Client build not available - API only mode'
+      });
+    }
+  } catch (error) {
+    res.status(200).json({ 
+      message: 'Analytical Testing Laboratory API Server',
+      status: 'running',
+      error: 'Client serving failed'
+    });
+  }
 });
 
 // Error handling middleware
