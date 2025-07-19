@@ -22,8 +22,17 @@ app.use(cors());
 // Parse JSON request body
 app.use(express.json());
 
-// Serve static files from the client/build directory
-app.use(express.static(path.join(__dirname, 'client/build')));
+// Check if build directory exists and serve static files
+const buildPath = path.join(__dirname, 'client/build');
+const buildExists = fs.existsSync(buildPath);
+
+if (buildExists) {
+  console.log('✅ Build directory found - serving React app');
+  app.use(express.static(buildPath));
+} else {
+  console.log('⚠️  Build directory not found - React app will not be served');
+  console.log('   Expected path:', buildPath);
+}
 
 // Sample data for API responses
 const sampleData = {
@@ -202,8 +211,40 @@ app.get('*', (req, res) => {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
   
-  // Otherwise serve the React app
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  // Check if build files exist
+  const indexPath = path.join(__dirname, 'client/build', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    // Serve the React app
+    res.sendFile(indexPath);
+  } else {
+    // Build files don't exist - provide helpful error message
+    res.status(503).send(`
+      <html>
+        <head><title>Build Error</title></head>
+        <body style="font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5;">
+          <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h1 style="color: #e74c3c;">🚧 Build Files Missing</h1>
+            <p>The React application build files are not available. This usually means:</p>
+            <ul>
+              <li>The build process failed during deployment</li>
+              <li>The build command was not executed</li>
+              <li>Build files were not preserved between build and start phases</li>
+            </ul>
+            <h3>API Endpoints Available:</h3>
+            <ul>
+              <li><a href="/api/health">/api/health</a> - Server health check</li>
+              <li><a href="/api/categories">/api/categories</a> - Sample categories</li>
+              <li><a href="/api/partners">/api/partners</a> - Sample partners</li>
+              <li><a href="/api/blog">/api/blog</a> - Sample blog posts</li>
+              <li><a href="/api/certifications">/api/certifications</a> - Sample certifications</li>
+            </ul>
+            <p><strong>Expected build path:</strong> <code>${indexPath}</code></p>
+            <p><em>Check the deployment logs for build errors.</em></p>
+          </div>
+        </body>
+      </html>
+    `);
+  }
 });
 
 // Start the server

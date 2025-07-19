@@ -1,2 +1,14 @@
 [phases.install]
-projectPaths = ["client"]
+cmds = [
+  "npm ci",
+  "cd client && npm ci"
+]
+
+[phases.build]
+cmds = [
+  "cd client && npm run build",
+  "node railway-build-verification.js"
+]
+
+[phases.start]
+cmd = "node api-server-minimal.js"
