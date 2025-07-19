@@ -1,5 +1,4 @@
-const { User } = require('../models');
-const sequelize = require('../config/database');
+const { User, sequelize } = require('../models');
 
 // Railway-specific admin setup script
 async function setupRailwayAdmin() {

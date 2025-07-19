@@ -270,14 +270,19 @@ const server = app.listen(PORT, HOST, () => {
       // Auto-setup admin user for Railway deployment
       if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
         console.log('🔧 Production environment detected - setting up admin user...');
-        try {
-          const { setupRailwayAdmin } = require('./scripts/railway-admin-setup');
-          setupRailwayAdmin().catch(err => {
-            console.error('⚠️ Admin setup failed (non-critical):', err.message);
-          });
-        } catch (error) {
-          console.error('⚠️ Admin setup script not found or failed to load:', error.message);
-        }
+        
+        // Add a small delay to ensure database is fully ready
+        setTimeout(async () => {
+          try {
+            const { setupRailwayAdmin } = require('./scripts/railway-admin-setup');
+            await setupRailwayAdmin();
+            console.log('✅ Admin setup completed successfully');
+          } catch (error) {
+            console.error('⚠️ Admin setup failed (non-critical):', error.message);
+            console.error('   - Server will continue running');
+            console.error('   - Admin user may need to be created manually');
+          }
+        }, 2000); // 2 second delay
       }
     })
     .catch(err => {
