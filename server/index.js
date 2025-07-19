@@ -10,6 +10,7 @@ const adminRoutes = require('./routes/admin.routes');
 const certificationRoutes = require('./routes/certification.routes');
 const partnerRoutes = require('./routes/partner.routes');
 const blogRoutes = require('./routes/blog.routes');
+const debugRoutes = require('./routes/debug.routes');
 
 // Ensure uploads directory exists
 require('./scripts/ensure-uploads-directory');
@@ -121,6 +122,7 @@ app.use('/api/certifications', certificationRoutes);
 app.use('/api/partners', partnerRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/debug', debugRoutes);
 
 // API root route
 app.get('/api', (req, res) => {
