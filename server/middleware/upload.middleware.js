@@ -8,28 +8,22 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure storage based on environment
-let storage;
+// Configure storage - use disk storage for Railway (it has persistent filesystem)
+// Railway provides persistent storage unlike Netlify Functions
+storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function(req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
 
-// In production with Netlify Functions, use memory storage since filesystem is read-only
-// Files should be processed immediately and stored in cloud storage or database
 if (process.env.NODE_ENV === 'production') {
-  console.warn('WARNING: Using memory storage in production. Files must be processed immediately.');
-  console.warn('Consider implementing cloud storage (AWS S3, Cloudinary, etc.) for production use.');
-  
-  storage = multer.memoryStorage();
-} else {
-  // Development storage - use disk storage
-  storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-      cb(null, uploadDir);
-    },
-    filename: function(req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const ext = path.extname(file.originalname);
-      cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-    }
-  });
+  console.log('✅ Using disk storage for Railway production deployment');
+  console.log('📁 Upload directory:', uploadDir);
 }
 
 // File filter
