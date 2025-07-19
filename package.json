@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Analytical Testing Laboratory Website",
   "main": "server/index.js",
+  "engines": {
+    "node": ">=18 <19"
+  },
   "scripts": {
     "install": "npm ci && cd client && npm ci",
     "build": "cd client && npm run build",
-    "start": "node server/index.js",
+    "start": "node api-server-minimal.js",
     "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
     "install-server": "cd server && npm install",
     "install-client": "cd client && npm install",
@@ -21,9 +24,6 @@
     "render-start-absolute": "node /opt/render/project/src/server/index.js",
     "render-start-fallback": "cd server && node index.js",
     "render-debug": "NODE_DEBUG=http,net,stream node start-server.js"
-  },
-  "engines": {
-    "node": ">=18 <19"
   },
   "cacheDirectories": ["client/node_modules", "server/node_modules"],
   "dependencies": {
