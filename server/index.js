@@ -100,9 +100,7 @@ app.use('/uploads', express.static('uploads'));
 // Serve static files from React app (Railway-safe)
 try {
   const path = require('path');
-  const clientBuildPath = process.env.NODE_ENV === 'production' 
-    ? path.resolve(__dirname, './client/build')
-    : path.resolve(__dirname, '../client/build');
+  const clientBuildPath = path.resolve(__dirname, '../client/build');
   
   if (require('fs').existsSync(clientBuildPath)) {
     app.use(express.static(clientBuildPath));
@@ -201,9 +199,7 @@ app.get('/api/diagnostics', (req, res) => {
 app.get('*', (req, res) => {
   try {
     const path = require('path');
-    const clientBuildPath = process.env.NODE_ENV === 'production'
-      ? path.resolve(__dirname, './client/build/index.html')
-      : path.resolve(__dirname, '../client/build/index.html');
+    const clientBuildPath = path.resolve(__dirname, '../client/build/index.html');
     
     if (require('fs').existsSync(clientBuildPath)) {
       res.sendFile(clientBuildPath);
