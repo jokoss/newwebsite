@@ -2,7 +2,6 @@
   "name": "analytical-testing-lab",
   "version": "1.0.0",
   "description": "Analytical Testing Laboratory Website",
-  "main": "api-server-minimal.js",
   "engines": {
     "node": ">=18 <19"
   },
