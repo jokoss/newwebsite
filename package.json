@@ -2,30 +2,15 @@
   "name": "analytical-testing-lab",
   "version": "1.0.0",
   "description": "Analytical Testing Laboratory Website",
-  "main": "server/index.js",
+  "main": "api-server-minimal.js",
   "engines": {
     "node": ">=18 <19"
   },
   "scripts": {
     "install": "npm ci && cd client && npm ci",
     "build": "cd client && npm run build",
-    "start": "node api-server-minimal.js",
-    "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
-    "install-server": "cd server && npm install",
-    "install-client": "cd client && npm install",
-    "install-functions": "cd netlify/functions && npm install",
-    "setup": "npm run install-server && npm run install-client && npm run install-functions",
-    "docker-install": "npm run install-server && npm run install-client",
-    "heroku-postbuild": "npm run build",
-    "netlify-build": "npm run install-client && cd client && npm run build",
-    "render-build": "npm install && npm run install-server && npm run install-client && npm run build",
-    "render-start": "node start-server.js",
-    "render-start-direct": "node server/index.js",
-    "render-start-absolute": "node /opt/render/project/src/server/index.js",
-    "render-start-fallback": "cd server && node index.js",
-    "render-debug": "NODE_DEBUG=http,net,stream node start-server.js"
+    "start": "node api-server-minimal.js"
   },
-  "cacheDirectories": ["client/node_modules", "server/node_modules"],
   "dependencies": {
     "concurrently": "^8.0.1",
     "cross-env": "^7.0.3",
