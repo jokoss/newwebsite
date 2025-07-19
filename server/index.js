@@ -195,10 +195,17 @@ app.use((err, req, res, next) => {
 });
 
 // Start server with better error handling
-console.log('🚀 Starting server initialization...');
-console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-console.log(`Port: ${PORT}`);
-console.log(`Database URL configured: ${process.env.DATABASE_URL ? 'Yes' : 'No (using SQLite fallback)'}`);
+console.log('🚀 RAILWAY DEPLOYMENT: Starting server initialization...');
+console.log('📊 Railway Environment Details:');
+console.log(`   - NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+console.log(`   - PORT: ${PORT}`);
+console.log(`   - Host: 0.0.0.0 (Railway/Docker compatible)`);
+console.log(`   - Database URL: ${process.env.DATABASE_URL ? 'Set ✅' : 'Not set ❌'}`);
+console.log(`   - Process ID: ${process.pid}`);
+console.log(`   - Node Version: ${process.version}`);
+console.log(`   - Platform: ${process.platform}`);
+console.log(`   - Architecture: ${process.arch}`);
+console.log(`   - Memory Usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
 
 // Test database connection first
 sequelize.authenticate()
