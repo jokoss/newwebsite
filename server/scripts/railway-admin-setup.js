@@ -75,6 +75,8 @@ async function setupRailwayAdmin() {
     console.log('   Please change the password after first login for security.');
     console.log('==================================================');
     
+    return { success: true, adminUser };
+    
   } catch (error) {
     console.error('❌ Error setting up Railway admin:', error);
     
@@ -85,10 +87,8 @@ async function setupRailwayAdmin() {
     } else {
       console.error('💡 Full error details:', error.message);
     }
-  } finally {
-    await sequelize.close();
-    console.log('🔌 Database connection closed.');
-    process.exit(0);
+    
+    throw error; // Re-throw for caller to handle
   }
 }
 

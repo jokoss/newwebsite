@@ -266,6 +266,19 @@ const server = app.listen(PORT, HOST, () => {
     })
     .then(() => {
       console.log('✅ Database synchronized successfully.');
+      
+      // Auto-setup admin user for Railway deployment
+      if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
+        console.log('🔧 Production environment detected - setting up admin user...');
+        try {
+          const { setupRailwayAdmin } = require('./scripts/railway-admin-setup');
+          setupRailwayAdmin().catch(err => {
+            console.error('⚠️ Admin setup failed (non-critical):', err.message);
+          });
+        } catch (error) {
+          console.error('⚠️ Admin setup script not found or failed to load:', error.message);
+        }
+      }
     })
     .catch(err => {
       console.error('⚠️  Database connection failed (server still running):', err.message);
