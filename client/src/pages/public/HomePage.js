@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
   Container,
@@ -18,6 +19,7 @@ import {
   Avatar,
   Stack,
   Divider,
+  CardMedia,
 } from '@mui/material';
 import { 
   ArrowForward as ArrowForwardIcon, 
@@ -319,36 +321,102 @@ const Hero = () => {
 // Enhanced Featured Services Section
 const FeaturedServices = () => {
   const theme = useTheme();
-  
-  const featuredServices = [
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fallback services for when API fails
+  const fallbackServices = [
     {
       id: 1,
-      title: 'Biochemical Testing',
+      name: 'Biochemical Testing',
       description: 'Advanced biochemical analysis for research and diagnostic applications with state-of-the-art instrumentation.',
-      icon: <ScienceIcon sx={{ fontSize: '3rem' }} />,
-      link: '/services/1',
-      color: theme.palette.primary.main,
-      gradient: `linear-gradient(135deg, ${theme.palette.primary.main}20, ${theme.palette.primary.main}40)`,
+      imageUrl: '/images/categories/biochemical-testing.jpg',
     },
     {
       id: 2,
-      title: 'Environmental Analysis',
+      name: 'Environmental Analysis',
       description: 'Comprehensive environmental testing for soil, water, and air quality monitoring and compliance.',
-      icon: <TimelineIcon sx={{ fontSize: '3rem' }} />,
-      link: '/services/2',
-      color: theme.palette.secondary.main,
-      gradient: `linear-gradient(135deg, ${theme.palette.secondary.main}20, ${theme.palette.secondary.main}40)`,
+      imageUrl: '/images/categories/environmental-analysis.jpg',
     },
     {
-      id: 3,
-      title: 'Material Characterization',
+      id: 5,
+      name: 'Material Characterization',
       description: 'Detailed analysis of material properties and composition for quality control and research.',
-      icon: <VerifiedIcon sx={{ fontSize: '3rem' }} />,
-      link: '/services/5',
-      color: theme.palette.tertiary?.main || '#7E57C2',
-      gradient: `linear-gradient(135deg, ${theme.palette.tertiary?.main || '#7E57C2'}20, ${theme.palette.tertiary?.main || '#7E57C2'}40)`,
+      imageUrl: '/images/categories/material-characterization.jpg',
     }
   ];
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('/api/categories');
+        
+        console.log('Homepage - categories loaded:', response.data);
+        
+        const categoriesData = response.data.data || response.data;
+        
+        if (Array.isArray(categoriesData) && categoriesData.length > 0) {
+          // Take first 3 categories for featured section
+          setCategories(categoriesData.slice(0, 3));
+        } else {
+          console.log('No categories found in API response. Using fallback data.');
+          setCategories(fallbackServices);
+        }
+        
+        setError('');
+      } catch (err) {
+        console.error('Error fetching categories for homepage:', err);
+        console.log('Using fallback categories data due to API error');
+        setCategories(fallbackServices);
+        setError('');  // Don't show error to user since we're using fallback data
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Icon mapping for different service types
+  const getServiceIcon = (name) => {
+    const iconMap = {
+      'biochemical': <ScienceIcon sx={{ fontSize: '3rem' }} />,
+      'environmental': <TimelineIcon sx={{ fontSize: '3rem' }} />,
+      'material': <VerifiedIcon sx={{ fontSize: '3rem' }} />,
+      'microbiological': <ScienceIcon sx={{ fontSize: '3rem' }} />,
+      'molecular': <TimelineIcon sx={{ fontSize: '3rem' }} />,
+      'pharmaceutical': <VerifiedIcon sx={{ fontSize: '3rem' }} />,
+      'food': <ScienceIcon sx={{ fontSize: '3rem' }} />,
+      'toxicology': <TimelineIcon sx={{ fontSize: '3rem' }} />,
+    };
+    
+    const key = Object.keys(iconMap).find(k => name.toLowerCase().includes(k));
+    return iconMap[key] || <ScienceIcon sx={{ fontSize: '3rem' }} />;
+  };
+
+  // Color mapping for different services
+  const getServiceColor = (index) => {
+    const colors = [
+      theme.palette.primary.main,
+      theme.palette.secondary.main,
+      theme.palette.tertiary?.main || '#7E57C2',
+    ];
+    return colors[index % colors.length];
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ py: 12, background: 'linear-gradient(180deg, #fafafa 0%, #ffffff 100%)' }}>
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+            <CircularProgress />
+          </Box>
+        </Container>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ py: 12, background: 'linear-gradient(180deg, #fafafa 0%, #ffffff 100%)' }}>
@@ -394,87 +462,103 @@ const FeaturedServices = () => {
         </Box>
 
         <Grid container spacing={4}>
-          {featuredServices.map((service, index) => (
-            <Grid item xs={12} md={4} key={service.id}>
-              <Card 
-                elevation={0}
-                sx={{ 
-                  height: '100%', 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  borderRadius: '24px',
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  border: `2px solid ${service.color}20`,
-                  transition: 'all 0.4s ease',
-                  '&:hover': {
-                    transform: 'translateY(-12px)',
-                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
-                    border: `2px solid ${service.color}40`,
-                  }
-                }}
-              >
-                <CardContent sx={{ flexGrow: 1, p: 5, textAlign: 'center' }}>
-                  <Box
-                    sx={{
-                      width: 100,
-                      height: 100,
-                      borderRadius: '50%',
-                      background: service.gradient,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mx: 'auto',
-                      mb: 3,
-                      color: service.color,
-                    }}
-                  >
-                    {service.icon}
-                  </Box>
-                  <Typography 
-                    gutterBottom 
-                    variant="h4" 
-                    component="h3" 
-                    sx={{ 
-                      fontWeight: 600,
-                      mb: 2,
-                      color: 'text.primary',
-                    }}
-                  >
-                    {service.title}
-                  </Typography>
-                  <Typography 
-                    variant="body1" 
-                    sx={{ 
-                      color: 'text.secondary',
-                      lineHeight: 1.7,
-                      fontSize: '1.1rem',
-                    }}
-                  >
-                    {service.description}
-                  </Typography>
-                </CardContent>
-                <CardActions sx={{ p: 4, pt: 0, justifyContent: 'center' }}>
-                  <Button 
-                    component={RouterLink} 
-                    to={service.link}
-                    endIcon={<ArrowForwardIcon />}
-                    sx={{ 
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      fontSize: '1rem',
-                      color: service.color,
-                      '&:hover': {
-                        background: `${service.color}10`,
-                      }
-                    }}
-                  >
-                    Learn More
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
+          {categories.map((service, index) => {
+            const serviceColor = getServiceColor(index);
+            const serviceGradient = `linear-gradient(135deg, ${serviceColor}20, ${serviceColor}40)`;
+            
+            return (
+              <Grid item xs={12} md={4} key={service.id}>
+                <Card 
+                  elevation={0}
+                  sx={{ 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    borderRadius: '24px',
+                    background: 'rgba(255, 255, 255, 0.8)',
+                    backdropFilter: 'blur(20px)',
+                    border: `2px solid ${serviceColor}20`,
+                    transition: 'all 0.4s ease',
+                    '&:hover': {
+                      transform: 'translateY(-12px)',
+                      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
+                      border: `2px solid ${serviceColor}40`,
+                    }
+                  }}
+                >
+                  {service.imageUrl && (
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={service.imageUrl || `https://source.unsplash.com/random/400x300?${service.name.replace(/\s+/g, ',')}`}
+                      alt={service.name}
+                      sx={{ borderRadius: '24px 24px 0 0' }}
+                    />
+                  )}
+                  <CardContent sx={{ flexGrow: 1, p: 5, textAlign: 'center' }}>
+                    {!service.imageUrl && (
+                      <Box
+                        sx={{
+                          width: 100,
+                          height: 100,
+                          borderRadius: '50%',
+                          background: serviceGradient,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mx: 'auto',
+                          mb: 3,
+                          color: serviceColor,
+                        }}
+                      >
+                        {getServiceIcon(service.name)}
+                      </Box>
+                    )}
+                    <Typography 
+                      gutterBottom 
+                      variant="h4" 
+                      component="h3" 
+                      sx={{ 
+                        fontWeight: 600,
+                        mb: 2,
+                        color: 'text.primary',
+                      }}
+                    >
+                      {service.name}
+                    </Typography>
+                    <Typography 
+                      variant="body1" 
+                      sx={{ 
+                        color: 'text.secondary',
+                        lineHeight: 1.7,
+                        fontSize: '1.1rem',
+                      }}
+                    >
+                      {service.description || 'Comprehensive testing services for various analytical needs.'}
+                    </Typography>
+                  </CardContent>
+                  <CardActions sx={{ p: 4, pt: 0, justifyContent: 'center' }}>
+                    <Button 
+                      component={RouterLink} 
+                      to={`/services/${service.id}`}
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{ 
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        color: serviceColor,
+                        '&:hover': {
+                          background: `${serviceColor}10`,
+                        }
+                      }}
+                    >
+                      Learn More
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
 
         <Box sx={{ textAlign: 'center', mt: 8 }}>
