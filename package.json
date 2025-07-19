@@ -8,7 +8,7 @@
   },
   "scripts": {
     "postinstall": "cd client && npm install",
-    "build": "echo 'Using pre-built client files - skipping build step'",
+    "build": "cd client && npm run build",
     "start": "node api-server-minimal.js"
   },
   "dependencies": {
