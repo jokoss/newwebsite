@@ -1,14 +1,15 @@
 [phases.setup]
-nixPkgs = ["nodejs_22", "npm-9_x"]
+nixPkgs = ["nodejs_18", "npm-9_x"]
 
 [phases.install]
+projectPaths = ["client"]
 cmds = ["npm ci"]
 
 [phases.build]
-cmds = ["npm run install-server"]
+cmds = ["cd client && npm run build"]
 
 [start]
-cmd = "node server/index.js"
+cmd = "npm start"
 
 [variables]
 NODE_ENV = "production"

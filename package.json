@@ -4,8 +4,9 @@
   "description": "Analytical Testing Laboratory Website",
   "main": "server/index.js",
   "scripts": {
+    "install": "npm ci && cd client && npm ci",
+    "build": "cd client && npm run build",
     "start": "node server/index.js",
-    "build": "npm run install-server && cd client && npm install && cross-env CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true npm run build",
     "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
     "install-server": "cd server && npm install",
     "install-client": "cd client && npm install",
@@ -22,7 +23,7 @@
     "render-debug": "NODE_DEBUG=http,net,stream node start-server.js"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18 <19"
   },
   "cacheDirectories": ["client/node_modules", "server/node_modules"],
   "dependencies": {
