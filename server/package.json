@@ -7,7 +7,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fix-categories": "node scripts/railway-fix-categories.js"
+    "fix-categories": "node scripts/railway-fix-categories.js",
+    "migrate-motzz": "node scripts/migrate-motzz-data.js"
   },
   "keywords": [
     "express",
