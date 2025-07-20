@@ -358,8 +358,8 @@ const FeaturedServices = () => {
         const categoriesData = response.data.data || response.data;
         
         if (Array.isArray(categoriesData) && categoriesData.length > 0) {
-          // Take first 3 categories for featured section
-          setCategories(categoriesData.slice(0, 3));
+          // Take first 8 categories for featured section (2 rows of 4)
+          setCategories(categoriesData.slice(0, 8));
         } else {
           console.log('No categories found in API response. Using fallback data.');
           setCategories(fallbackServices);
@@ -467,7 +467,7 @@ const FeaturedServices = () => {
             const serviceGradient = `linear-gradient(135deg, ${serviceColor}20, ${serviceColor}40)`;
             
             return (
-              <Grid item xs={12} md={4} key={service.id}>
+              <Grid item xs={12} sm={6} md={3} key={service.id}>
                 <Card 
                   elevation={0}
                   sx={{ 
