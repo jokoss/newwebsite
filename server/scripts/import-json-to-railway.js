@@ -103,6 +103,7 @@ async function importData() {
         excerpt: localPost.excerpt,
         slug: localPost.slug,
         featured_image: localPost.featured_image,
+        author_name: localPost.author_name || localPost.authorName || 'Admin', // Handle missing authorName
         is_published: localPost.is_published !== undefined ? localPost.is_published : true,
         published_at: localPost.published_at,
         created_at: localPost.created_at || new Date(),
