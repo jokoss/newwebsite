@@ -16,7 +16,7 @@ echo.
 echo Step 1: Pushing latest code to GitHub...
 git add .
 git commit -m "Add Motzz Laboratory data migration script"
-git push origin main
+git push origin master
 
 echo.
 echo Step 2: Running migration on Railway...
