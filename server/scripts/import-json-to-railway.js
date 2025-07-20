@@ -100,14 +100,11 @@ async function importData() {
       await BlogPost.create({
         title: localPost.title,
         content: localPost.content,
-        excerpt: localPost.excerpt,
         slug: localPost.slug,
-        featured_image: localPost.featured_image,
-        author_name: localPost.author_name || localPost.authorName || 'Admin', // Handle missing authorName
-        is_published: localPost.is_published !== undefined ? localPost.is_published : true,
-        published_at: localPost.published_at,
-        created_at: localPost.created_at || new Date(),
-        updated_at: localPost.updated_at || new Date()
+        authorName: localPost.author_name || localPost.authorName || 'Admin', // Handle missing authorName
+        featuredImage: localPost.featured_image || localPost.featuredImage,
+        publishedAt: localPost.published_at || localPost.publishedAt,
+        isPublished: localPost.is_published !== undefined ? localPost.is_published : (localPost.isPublished !== undefined ? localPost.isPublished : true)
       });
       console.log(`✅ Imported blog post: ${localPost.title}`);
     }
