@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Container,
   Typography,
@@ -68,7 +68,7 @@ const ServicesPage = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/api/categories');
+        const response = await api.get('/categories');
         
         // Handle non-OK responses (axios doesn't have an 'ok' property)
         if (response.status < 200 || response.status >= 300) {

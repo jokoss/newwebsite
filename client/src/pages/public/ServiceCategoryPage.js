@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Container,
   Typography,
@@ -71,7 +71,7 @@ const ServiceCategoryPage = () => {
     const fetchCategoryDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/categories/${categoryId}`);
+        const response = await api.get(`/categories/${categoryId}`);
         
         // Check if we have valid data
         if (response.data && (response.data.data || response.data)) {

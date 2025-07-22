@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Box,
   Container,
@@ -65,7 +65,7 @@ const BlogPage = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/blog?page=${page}&limit=6`);
+        const response = await api.get(`/blog?page=${page}&limit=6`);
         
         // Check if we have valid data
         if (response.data && response.data.data && Array.isArray(response.data.data)) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Box,
   Container,
@@ -340,10 +340,40 @@ const FeaturedServices = () => {
       imageUrl: '/images/categories/environmental-analysis.jpg',
     },
     {
-      id: 5,
+      id: 3,
       name: 'Material Characterization',
       description: 'Detailed analysis of material properties and composition for quality control and research.',
       imageUrl: '/images/categories/material-characterization.jpg',
+    },
+    {
+      id: 4,
+      name: 'Microbiological Testing',
+      description: 'Detection and identification of microorganisms for safety and quality control in various industries.',
+      imageUrl: '/images/categories/microbiological-testing.jpg',
+    },
+    {
+      id: 5,
+      name: 'Food & Beverage Testing',
+      description: 'Quality and safety testing for food and beverage products to ensure regulatory compliance.',
+      imageUrl: '/images/categories/food-testing.jpg',
+    },
+    {
+      id: 6,
+      name: 'Pharmaceutical Analysis',
+      description: 'Testing and validation services for pharmaceutical products and raw materials.',
+      imageUrl: '/images/categories/pharmaceutical-analysis.jpg',
+    },
+    {
+      id: 7,
+      name: 'Toxicology Screening',
+      description: 'Comprehensive toxicology testing services for clinical, forensic, and research applications.',
+      imageUrl: '/images/categories/toxicology-screening.jpg',
+    },
+    {
+      id: 8,
+      name: 'Molecular Diagnostics',
+      description: 'Advanced molecular testing for genetic analysis, disease diagnosis, and research applications.',
+      imageUrl: '/images/categories/molecular-diagnostics.jpg',
     }
   ];
 
@@ -351,7 +381,7 @@ const FeaturedServices = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/api/categories');
+        const response = await api.get('/categories');
         
         console.log('Homepage - categories loaded:', response.data);
         
@@ -377,7 +407,7 @@ const FeaturedServices = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [fallbackServices]);
 
   // Icon mapping for different service types
   const getServiceIcon = (name) => {
@@ -467,7 +497,7 @@ const FeaturedServices = () => {
             const serviceGradient = `linear-gradient(135deg, ${serviceColor}20, ${serviceColor}40)`;
             
             return (
-              <Grid item xs={12} sm={6} md={3} key={service.id}>
+              <Grid item xs={12} sm={6} md={3} key={service.id || index}>
                 <Card 
                   elevation={0}
                   sx={{ 
@@ -595,8 +625,11 @@ const FeaturedServices = () => {
 // Enhanced CTA Section with testimonials
 const CtaSection = () => {
   const theme = useTheme();
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
   
-  const testimonials = [
+  // Fallback testimonials for when API fails
+  const fallbackTestimonials = [
     {
       name: 'Dr. Sarah Johnson',
       role: 'Research Director',
@@ -619,6 +652,34 @@ const CtaSection = () => {
       avatar: 'ER',
     },
   ];
+  
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/testimonials');
+        
+        console.log('Homepage - testimonials loaded:', response.data);
+        
+        const testimonialsData = response.data || [];
+        
+        if (Array.isArray(testimonialsData) && testimonialsData.length > 0) {
+          setTestimonials(testimonialsData);
+        } else {
+          console.log('No testimonials found in API response. Using fallback data.');
+          setTestimonials(fallbackTestimonials);
+        }
+      } catch (err) {
+        console.error('Error fetching testimonials for homepage:', err);
+        console.log('Using fallback testimonials data due to API error');
+        setTestimonials(fallbackTestimonials);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, [fallbackTestimonials]);
   
   return (
     <Box 
@@ -748,38 +809,44 @@ const CtaSection = () => {
               <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, mb: 4 }}>
                 What Our Clients Say
               </Typography>
-              <Stack spacing={3}>
-                {testimonials.map((testimonial, index) => (
-                  <Paper
-                    key={index}
-                    elevation={0}
-                    sx={{
-                      p: 4,
-                      borderRadius: '16px',
-                      background: 'rgba(255, 255, 255, 0.8)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(0,0,0,0.05)',
-                    }}
-                  >
-                    <Typography variant="body1" sx={{ mb: 3, fontStyle: 'italic', lineHeight: 1.6 }}>
-                      "{testimonial.quote}"
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Avatar sx={{ background: theme.palette.primary.main }}>
-                        {testimonial.avatar}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                          {testimonial.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {testimonial.role}, {testimonial.company}
-                        </Typography>
+              {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <Stack spacing={3}>
+                  {testimonials.slice(0, 3).map((testimonial, index) => (
+                    <Paper
+                      key={index}
+                      elevation={0}
+                      sx={{
+                        p: 4,
+                        borderRadius: '16px',
+                        background: 'rgba(255, 255, 255, 0.8)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(0,0,0,0.05)',
+                      }}
+                    >
+                      <Typography variant="body1" sx={{ mb: 3, fontStyle: 'italic', lineHeight: 1.6 }}>
+                        "{testimonial.quote}"
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Avatar sx={{ background: theme.palette.primary.main }}>
+                          {testimonial.avatar || testimonial.name.charAt(0)}
+                        </Avatar>
+                        <Box>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                            {testimonial.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {testimonial.role}, {testimonial.company}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  </Paper>
-                ))}
-              </Stack>
+                    </Paper>
+                  ))}
+                </Stack>
+              )}
             </Box>
           </Grid>
         </Grid>

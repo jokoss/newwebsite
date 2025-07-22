@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Box,
   Container,
@@ -95,7 +95,7 @@ const CategoryManagement = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/admin/categories');
+      const response = await api.get('/admin/categories');
       setCategories(response.data.data);
       console.log('Categories loaded:', response.data.data);
       
@@ -244,7 +244,7 @@ const CategoryManagement = () => {
       }));
       
       // Send the update to the backend
-      await axios.put('/api/admin/categories/reorder', { categories: categoryOrderData });
+      await api.put('/admin/categories/reorder', { categories: categoryOrderData });
       
       setSnackbar({
         open: true,
@@ -401,7 +401,7 @@ const CategoryManagement = () => {
       
       if (selectedCategory) {
         // Update existing category
-        response = await axios.put(`/api/admin/categories/${selectedCategory.id}`, formDataToSubmit);
+        response = await api.put(`/admin/categories/${selectedCategory.id}`, formDataToSubmit);
         
         setSnackbar({
           open: true,
@@ -410,7 +410,7 @@ const CategoryManagement = () => {
         });
       } else {
         // Create new category
-        response = await axios.post('/api/admin/categories', formDataToSubmit);
+        response = await api.post('/admin/categories', formDataToSubmit);
         
         setSnackbar({
           open: true,
@@ -449,7 +449,7 @@ const CategoryManagement = () => {
       };
       
       // Delete via API with the chosen option
-      const response = await axios.delete(`/api/admin/categories/${selectedCategory.id}`, {
+      const response = await api.delete(`/admin/categories/${selectedCategory.id}`, {
         data: deleteData
       });
       console.log('Delete response:', response);

@@ -36,7 +36,8 @@ import {
   Public as PublicIcon,
   Settings as SettingsIcon,
   Close as CloseIcon,
-  Article as ArticleIcon
+  Article as ArticleIcon,
+  FormatQuote as FormatQuoteIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 
@@ -138,6 +139,11 @@ const AdminLayout = () => {
       text: 'Blog',
       icon: <ArticleIcon />,
       path: '/admin/blog'
+    },
+    {
+      text: 'Testimonials',
+      icon: <FormatQuoteIcon />,
+      path: '/admin/testimonials'
     }
   ];
 

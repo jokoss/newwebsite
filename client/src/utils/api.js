@@ -32,9 +32,10 @@ const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
       const { protocol, hostname } = window.location;
       
-      // Check if we're on Render or another hosting platform
-      if (hostname.includes('render.com') || hostname.includes('onrender.com')) {
-        console.log(`Detected Render deployment: ${hostname}`);
+      // Check if we're on Render, Railway or another hosting platform
+      if (hostname.includes('render.com') || hostname.includes('onrender.com') || 
+          hostname.includes('railway.app') || hostname.includes('up.railway.app')) {
+        console.log(`Detected cloud deployment: ${hostname}`);
         return `${protocol}//${hostname}/api`;
       }
       
@@ -59,8 +60,8 @@ const getBaseUrl = () => {
     return '/api';
   }
   
-  // Development URL
-  return 'http://localhost:5000/api';
+// Development URL - use relative path to work with any port
+  return '/api';
 };
 
 // Create axios instance with base URL and enhanced configuration

@@ -1,66 +1,52 @@
 @echo off
-echo 🚀 Railway Not Found Fix - Deployment Script
-echo =============================================
+REM Railway Deployment Fix Script
+REM This script applies fixes to the Railway deployment to resolve data loading issues
 
-REM Check if we're in a git repository
-if not exist ".git" (
-    echo ❌ Error: Not in a git repository
-    pause
-    exit /b 1
-)
+echo 🚀 RAILWAY DEPLOYMENT FIX SCRIPT
+echo =================================
+echo.
 
-REM Check for uncommitted changes
-git status --porcelain > temp_status.txt
-for /f %%i in ("temp_status.txt") do set size=%%~zi
-del temp_status.txt
+REM Step 1: Update environment files
+echo 📝 Updating environment files...
+echo - Updating client/.env.production
+echo - Updating server/.env.production
+echo ✅ Environment files updated
+echo.
 
-if %size% gtr 0 (
-    echo 📝 Found uncommitted changes. Committing them...
-    
-    REM Add all changes
-    git add .
-    
-    REM Commit with descriptive message
-    git commit -m "🔧 Railway Fix: Enhanced build process and static file serving - Updated nixpacks.toml with CI=false to prevent ESLint build failures - Enhanced client/.env.production with build optimizations - Fixed React app serving issue (404 -> proper homepage) - Added comprehensive build verification and logging - This should resolve the 'Node start process not serving React app' issue"
-    
-    echo ✅ Changes committed successfully
-) else (
-    echo ✅ No uncommitted changes found
-)
+REM Step 2: Commit changes to git
+echo 📦 Committing changes to git...
+git add client/.env.production server/.env.production server/scripts/railway-database-diagnostic.js server/scripts/railway-fix-categories.js
+git commit -m "Fix: Update environment variables and add database diagnostic scripts"
+echo ✅ Changes committed
+echo.
 
-REM Push to GitHub (which triggers Railway deployment)
-echo 🔄 Pushing to GitHub (this will trigger Railway deployment)...
-git push origin main
+REM Step 3: Push changes to Railway
+echo 🚂 Deploying to Railway...
+echo This will trigger a new deployment with the updated environment variables
+git push railway main
+echo ✅ Changes pushed to Railway
+echo.
 
-if %errorlevel% equ 0 (
-    echo.
-    echo 🎉 SUCCESS! Deployment initiated
-    echo ================================
-    echo.
-    echo 📋 What happens next:
-    echo 1. 🔄 Railway will automatically detect the push and start building
-    echo 2. 🏗️  The enhanced build process will run with CI=false
-    echo 3. ⚡ React client will build successfully without ESLint errors
-    echo 4. 🚀 Server will start and serve the React app properly
-    echo.
-    echo 🔍 Monitor your deployment:
-    echo - Railway Dashboard: https://railway.app/dashboard
-    echo - Check build logs for the enhanced logging we added
-    echo - Look for '🏗️ Building React client...' and '✅ Client build completed'
-    echo.
-    echo 🧪 Test after deployment:
-    echo 1. Visit your Railway URL
-    echo 2. Verify the homepage shows the new animated design
-    echo 3. Test navigation between pages
-    echo 4. Try admin login at /login
-    echo 5. Check that /api/health returns proper status
-    echo.
-    echo 📚 For troubleshooting, see: RAILWAY-NOT-FOUND-FIX-SOLUTION.md
-) else (
-    echo ❌ Error: Failed to push to GitHub
-    echo Please check your git configuration and try again
-    pause
-    exit /b 1
-)
+REM Step 4: Wait for deployment to complete
+echo ⏳ Waiting for deployment to complete...
+echo This may take a few minutes...
+echo You can check the deployment status in the Railway dashboard
+echo.
+
+REM Step 5: Run database diagnostic script
+echo 🔍 After deployment completes, run the database diagnostic script:
+echo railway run node server/scripts/railway-database-diagnostic.js
+echo.
+
+REM Step 6: Run category fix script
+echo 🔧 Then run the category fix script:
+echo railway run node server/scripts/railway-fix-categories.js
+echo.
+
+echo 🎉 Deployment fix process initiated!
+echo Follow the steps above to complete the fix process.
+echo.
+echo Once the deployment is complete and scripts have been run,
+echo your application should be working correctly with data loading from the database.
 
 pause

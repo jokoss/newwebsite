@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Box,
   Container,
@@ -83,8 +83,8 @@ const TestManagement = () => {
     try {
       setLoading(true);
       const [testsResponse, categoriesResponse] = await Promise.all([
-        axios.get('/api/admin/tests'),
-        axios.get('/api/admin/categories')
+        api.get('/admin/tests'),
+        api.get('/admin/categories')
       ]);
       
       setTests(testsResponse.data.data);
@@ -210,7 +210,7 @@ const TestManagement = () => {
       
       if (selectedTest) {
         // Update existing test
-        await axios.put(`/api/admin/tests/${selectedTest.id}`, testData);
+        await api.put(`/admin/tests/${selectedTest.id}`, testData);
         setSnackbar({
           open: true,
           message: 'Test updated successfully',
@@ -218,7 +218,7 @@ const TestManagement = () => {
         });
       } else {
         // Create new test
-        await axios.post('/api/admin/tests', testData);
+        await api.post('/admin/tests', testData);
         setSnackbar({
           open: true,
           message: 'Test created successfully',
@@ -246,7 +246,7 @@ const TestManagement = () => {
     try {
       console.log('Attempting to delete test:', selectedTest.id);
       
-      const response = await axios.delete(`/api/admin/tests/${selectedTest.id}`);
+      const response = await api.delete(`/admin/tests/${selectedTest.id}`);
       console.log('Delete response:', response);
       
       setSnackbar({
@@ -324,7 +324,7 @@ const TestManagement = () => {
         displayOrder: index
       }));
       
-      await axios.put('/api/admin/tests/reorder', { tests: testOrderData });
+      await api.put('/admin/tests/reorder', { tests: testOrderData });
       
       setSnackbar({
         open: true,

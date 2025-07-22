@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, ThemeProvider, CssBaseline } from '@mui/material';
 import { useAuth } from './context/AuthContext';
+import getTheme from './theme';
 
 // Layout
 import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/layout/AdminLayout';
 
-// Error Handling - Fixed import path for Railway Docker compatibility
+// Error Handling
 import ErrorBoundary from './components/utils/ErrorBoundary.js';
 import FallbackHomePage from './pages/public/FallbackHomePage';
 
@@ -34,6 +35,7 @@ import ProfilePage from './pages/admin/ProfilePage';
 import ImageManagement from './pages/admin/ImageManagement';
 import PartnerManagement from './pages/admin/PartnerManagement';
 import BlogManagement from './pages/admin/BlogManagement';
+import TestimonialManagement from './pages/admin/TestimonialManagement';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false, superAdminOnly = false }) => {
@@ -63,56 +65,80 @@ const ProtectedRoute = ({ children, adminOnly = false, superAdminOnly = false })
 };
 
 function App() {
-  return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={
-          <ErrorBoundary
-            fallback={(error) => <FallbackHomePage error={error} />}
-          >
-            <HomePage />
-          </ErrorBoundary>
-        } />
-        <Route path="services" element={<ServicesPage />} />
-        <Route path="services/:categoryId" element={<ServiceCategoryPage />} />
-        <Route path="about" element={<AboutPage />} />
-        <Route path="contact" element={<ContactPage />} />
-        <Route path="blog" element={<BlogPage />} />
-        <Route path="blog/:slug" element={<BlogPostPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
-        <Route path="terms-of-use" element={<TermsOfUsePage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
+  const [themeMode, setThemeMode] = useState(() => {
+    // Try to get the saved theme from localStorage
+    const savedTheme = localStorage.getItem('themeMode');
+    return savedTheme || 'default';
+  });
+  const theme = getTheme(themeMode);
 
-      {/* Admin Routes */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute adminOnly>
-            <AdminLayout />
-          </ProtectedRoute>
-        }
+  // Save theme preference to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('themeMode', themeMode);
+  }, [themeMode]);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          transition: 'background-color 0.3s ease, color 0.3s ease',
+          minHeight: '100vh',
+          width: '100%',
+        }}
       >
-        <Route index element={<AdminDashboard />} />
-        <Route path="categories" element={<CategoryManagement />} />
-        <Route path="tests" element={<TestManagement />} />
-        <Route path="certifications" element={<CertificationManagement />} />
-        <Route path="images" element={<ImageManagement />} />
-        <Route path="partners" element={<PartnerManagement />} />
-        <Route path="blog" element={<BlogManagement />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route 
-          path="users" 
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<MainLayout setTheme={setThemeMode} />}>
+          <Route index element={
+            <ErrorBoundary
+              fallback={(error) => <FallbackHomePage error={error} />}
+            >
+              <HomePage />
+            </ErrorBoundary>
+          } />
+          <Route path="services" element={<ServicesPage />} />
+          <Route path="services/:categoryId" element={<ServiceCategoryPage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route path="blog" element={<BlogPage />} />
+          <Route path="blog/:slug" element={<BlogPostPage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="terms-of-use" element={<TermsOfUsePage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+
+        {/* Admin Routes */}
+        <Route
+          path="/admin"
           element={
-            <ProtectedRoute superAdminOnly>
-              <UserManagement />
+            <ProtectedRoute adminOnly>
+              <AdminLayout />
             </ProtectedRoute>
-          } 
-        />
-      </Route>
-    </Routes>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="categories" element={<CategoryManagement />} />
+          <Route path="tests" element={<TestManagement />} />
+          <Route path="certifications" element={<CertificationManagement />} />
+          <Route path="images" element={<ImageManagement />} />
+          <Route path="partners" element={<PartnerManagement />} />
+          <Route path="blog" element={<BlogManagement />} />
+          <Route path="testimonials" element={<TestimonialManagement />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route 
+            path="users" 
+            element={
+              <ProtectedRoute superAdminOnly>
+                <UserManagement />
+              </ProtectedRoute>
+            } 
+          />
+        </Route>
+      </Routes>
+      </Box>
+    </ThemeProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Box,
   Container,
@@ -41,30 +41,42 @@ const Footer = () => {
       { id: 3, name: "AASHTO", externalUrl: null }
     ];
 
+    // Use fallback data immediately to prevent UI glitches
+    setCertifications(fallbackCertifications);
+
     const fetchCertifications = async () => {
       try {
         // Add a timeout to prevent hanging requests
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // Reduced timeout
         
-        const response = await axios.get('/api/certifications', {
+        const response = await api.get('/certifications', {
           signal: controller.signal,
           headers: { 'Cache-Control': 'no-cache' }
         });
         
         clearTimeout(timeoutId);
         
-        // Check if response has data property
-        const certificationsData = response.data && response.data.data ? response.data.data : [];
-        setCertifications(certificationsData);
+        // Check if response has data property and is not empty
+        if (response.data && 
+            ((response.data.data && Array.isArray(response.data.data) && response.data.data.length > 0) || 
+             (Array.isArray(response.data) && response.data.length > 0))) {
+          const certificationsData = response.data.data || response.data;
+          setCertifications(certificationsData);
+        }
       } catch (error) {
-        console.error('Error fetching certifications:', error);
-        // Use fallback data when there's an error
-        setCertifications(fallbackCertifications);
+        // Error already logged by API utility
+        // Fallback data is already set, so no need to set it again
       }
     };
 
-    fetchCertifications();
+    // Wrap in try-catch to prevent any unhandled errors from breaking the UI
+    try {
+      fetchCertifications();
+    } catch (e) {
+      console.error('Unexpected error in certification fetch:', e);
+      // Fallback data is already set
+    }
   }, []);
 
   const scrollToTop = () => {
@@ -115,15 +127,15 @@ const Footer = () => {
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 3, md: 5 },
+            p: { xs: 4, sm: 4, md: 5 },
             borderRadius: 4,
             background: 'linear-gradient(135deg, rgba(11, 77, 131, 0.95) 0%, rgba(0, 163, 180, 0.9) 100%)',
             boxShadow: theme.customShadows.card,
             position: 'relative',
             overflow: 'hidden',
-            transform: 'translateY(-50%)',
-            mt: { xs: 0, md: 0 },
-            mb: { xs: -2, md: 0 },
+            transform: { xs: 'translateY(-30%)', md: 'translateY(-50%)' },
+            mt: { xs: 4, md: 0 },
+            mb: { xs: 0, md: 0 },
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -137,12 +149,28 @@ const Footer = () => {
             }
           }}
         >
-          <Grid container spacing={4} alignItems="center">
+          <Grid container spacing={{ xs: 3, md: 4 }} alignItems="center">
             <Grid item xs={12} md={7}>
-              <Typography variant="h3" sx={{ color: 'white', fontWeight: 700, mb: 2 }}>
+              <Typography 
+                variant="h3" 
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 700, 
+                  mb: 2,
+                  fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' }
+                }}
+              >
                 Request a Quote
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mb: 3 }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'rgba(255,255,255,0.9)', 
+                  mb: 3,
+                  fontSize: { xs: '0.95rem', sm: '1rem', md: '1rem' },
+                  lineHeight: 1.6
+                }}
+              >
                 Get a personalized quote for your analytical testing needs. Our team will provide a detailed proposal tailored to your specific requirements.
               </Typography>
             </Grid>
@@ -157,15 +185,16 @@ const Footer = () => {
                     background: 'white',
                     color: 'primary.dark',
                     fontWeight: 600,
-                    px: 4,
-                    py: 2,
-                    fontSize: '1.1rem',
+                    px: { xs: 3, md: 4 },
+                    py: { xs: 1.5, md: 2 },
+                    fontSize: { xs: '1rem', md: '1.1rem' },
                     '&:hover': {
                       background: 'rgba(255,255,255,0.9)',
                       boxShadow: '0 8px 25px rgba(0,0,0,0.2)',
                       transform: 'translateY(-5px)'
                     },
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    mt: { xs: 1, md: 0 }
                   }}
                 >
                   Get Your Quote

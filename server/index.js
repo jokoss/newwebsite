@@ -11,6 +11,7 @@ const adminRoutes = require('./routes/admin.routes');
 const certificationRoutes = require('./routes/certification.routes');
 const partnerRoutes = require('./routes/partner.routes');
 const blogRoutes = require('./routes/blog.routes');
+const testimonialRoutes = require('./routes/testimonial.routes');
 const debugRoutes = require('./routes/debug.routes');
 
 // Ensure uploads directory exists
@@ -114,6 +115,9 @@ try {
   console.log('⚠️ Static file serving setup failed:', error.message);
 }
 
+// Import API routes
+const apiRoutes = require('./routes/api');
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -122,8 +126,10 @@ app.use('/api/users', userRoutes);
 app.use('/api/certifications', certificationRoutes);
 app.use('/api/partners', partnerRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/debug', debugRoutes);
+app.use('/api', apiRoutes);
 
 // API root route
 app.get('/api', (req, res) => {

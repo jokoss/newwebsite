@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Container,
   Typography,
@@ -117,7 +117,7 @@ const BlogPostPage = () => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/blog/${slug}`);
+        const response = await api.get(`/blog/${slug}`);
         
         // Check if we have valid data
         if (response.data && response.data.data) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import {
   Box,
   Container,
@@ -21,6 +21,7 @@ import {
 import {
   Category as CategoryIcon,
   Science as ScienceIcon,
+  VerifiedUser as CertificationIcon,
   People as PeopleIcon,
   Email as EmailIcon
 } from '@mui/icons-material';
@@ -80,6 +81,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     categoriesCount: 0,
     testsCount: 0,
+    certificationsCount: 0,
   });
   const [recentTests, setRecentTests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -91,27 +93,15 @@ const AdminDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        // In a real application, you would fetch this data from your API
-        // const response = await axios.get('/api/admin/dashboard');
-        // setStats(response.data.stats);
-        // setRecentTests(response.data.recentTests);
+        // Fetch dashboard data from the API
+        const response = await api.get('/admin/dashboard');
         
-        // For demo purposes, we'll use mock data
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        setStats({
-          categoriesCount: 8,
-          testsCount: 47,
-        });
-        
-        setRecentTests([
-          { id: 1, name: 'HPLC Analysis', category: 'Chemical Analysis', price: 199.99, createdAt: '2025-06-10' },
-          { id: 2, name: 'GC-MS Testing', category: 'Chemical Analysis', price: 249.99, createdAt: '2025-06-09' },
-          { id: 3, name: 'Microbial Identification', category: 'Microbiological Testing', price: 179.99, createdAt: '2025-06-08' },
-          { id: 4, name: 'SEM Analysis', category: 'Materials Characterization', price: 299.99, createdAt: '2025-06-07' },
-          { id: 5, name: 'XRD Analysis', category: 'Materials Characterization', price: 229.99, createdAt: '2025-06-06' },
-        ]);
+        if (response.data.success) {
+          setStats(response.data.stats);
+          setRecentTests(response.data.recentTests);
+        } else {
+          throw new Error('Failed to fetch dashboard data');
+        }
         
         setError('');
       } catch (err) {
@@ -154,7 +144,7 @@ const AdminDashboard = () => {
 
       {/* Statistics cards */}
       <Grid container spacing={3} sx={{ mb: 6 }}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <StatCard
             icon={<CategoryIcon fontSize="medium" />}
             title="Categories"
@@ -163,13 +153,22 @@ const AdminDashboard = () => {
             description="Total service categories"
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <StatCard
             icon={<ScienceIcon fontSize="medium" />}
             title="Tests"
             value={stats.testsCount}
             color="secondary"
             description="Available testing services"
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <StatCard
+            icon={<CertificationIcon fontSize="medium" />}
+            title="Certifications"
+            value={stats.certificationsCount}
+            color="success"
+            description="Available certifications"
           />
         </Grid>
       </Grid>
@@ -199,6 +198,16 @@ const AdminDashboard = () => {
               to="/admin/tests"
             >
               Manage Tests
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button 
+              variant="contained" 
+              color="success" 
+              component={RouterLink}
+              to="/admin/certifications"
+            >
+              Manage Certifications
             </Button>
           </Grid>
         </Grid>

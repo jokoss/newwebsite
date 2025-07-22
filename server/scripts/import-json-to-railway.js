@@ -55,21 +55,22 @@ async function importData() {
       const newCategory = await Category.create({
         name: localCat.name,
         description: localCat.description,
-        is_active: localCat.is_active !== undefined ? localCat.is_active : true,
-        parent_id: null, // Will be updated in second pass
-        image_url: localCat.image_url,
-        created_at: localCat.created_at || new Date(),
-        updated_at: localCat.updated_at || new Date()
+        active: localCat.is_active !== undefined ? localCat.is_active : true,
+        parentId: null, // Will be updated in second pass
+        imageUrl: localCat.image_url,
+        displayOrder: localCat.display_order || 0,
+        createdAt: localCat.created_at || new Date(),
+        updatedAt: localCat.updated_at || new Date()
       });
       categoryIdMap[localCat.id] = newCategory.id;
       console.log(`✅ Imported category: ${localCat.name} (${localCat.id} → ${newCategory.id})`);
     }
 
-    // Update parent_id relationships for categories
+    // Update parentId relationships for categories
     for (const localCat of exportData.categories) {
       if (localCat.parent_id && categoryIdMap[localCat.parent_id]) {
         await Category.update(
-          { parent_id: categoryIdMap[localCat.parent_id] },
+          { parentId: categoryIdMap[localCat.parent_id] },
           { where: { id: categoryIdMap[localCat.id] } }
         );
         console.log(`✅ Updated parent relationship for category: ${localCat.name}`);
@@ -84,13 +85,13 @@ async function importData() {
         name: localTest.name,
         description: localTest.description,
         price: localTest.price,
-        turnaround_time: localTest.turnaround_time,
-        method: localTest.method,
-        category_id: categoryId,
-        is_active: localTest.is_active !== undefined ? localTest.is_active : true,
-        display_order: localTest.display_order || 0,
-        created_at: localTest.created_at || new Date(),
-        updated_at: localTest.updated_at || new Date()
+        turnaroundTime: localTest.turnaround_time,
+        methodReference: localTest.method,
+        categoryId: categoryId,
+        active: localTest.is_active !== undefined ? localTest.is_active : true,
+        displayOrder: localTest.display_order || 0,
+        createdAt: localTest.created_at || new Date(),
+        updatedAt: localTest.updated_at || new Date()
       });
       console.log(`✅ Imported test: ${localTest.name}`);
     }
@@ -114,12 +115,12 @@ async function importData() {
       await Partner.create({
         name: localPartner.name,
         description: localPartner.description,
-        logo_url: localPartner.logo_url,
-        website_url: localPartner.website_url,
-        is_active: localPartner.is_active !== undefined ? localPartner.is_active : true,
-        display_order: localPartner.display_order || 0,
-        created_at: localPartner.created_at || new Date(),
-        updated_at: localPartner.updated_at || new Date()
+        logo: localPartner.logo_url,
+        website: localPartner.website_url,
+        isActive: localPartner.is_active !== undefined ? localPartner.is_active : true,
+        displayOrder: localPartner.display_order || 0,
+        createdAt: localPartner.created_at || new Date(),
+        updatedAt: localPartner.updated_at || new Date()
       });
       console.log(`✅ Imported partner: ${localPartner.name}`);
     }
@@ -127,14 +128,15 @@ async function importData() {
     // Import Images
     for (const localImage of exportData.images) {
       await Image.create({
-        filename: localImage.filename,
-        original_name: localImage.original_name,
-        mime_type: localImage.mime_type,
-        size: localImage.size,
-        url: localImage.url,
-        alt_text: localImage.alt_text,
-        created_at: localImage.created_at || new Date(),
-        updated_at: localImage.updated_at || new Date()
+        name: localImage.filename || localImage.original_name,
+        description: localImage.alt_text,
+        filePath: localImage.url,
+        altText: localImage.alt_text,
+        fileSize: localImage.size,
+        mimeType: localImage.mime_type,
+        isActive: true,
+        createdAt: localImage.created_at || new Date(),
+        updatedAt: localImage.updated_at || new Date()
       });
       console.log(`✅ Imported image: ${localImage.filename}`);
     }
@@ -144,15 +146,13 @@ async function importData() {
       await Certification.create({
         name: localCert.name,
         description: localCert.description,
-        image_url: localCert.image_url,
-        certificate_url: localCert.certificate_url,
-        issued_by: localCert.issued_by,
-        issued_date: localCert.issued_date,
-        expiry_date: localCert.expiry_date,
-        is_active: localCert.is_active !== undefined ? localCert.is_active : true,
-        display_order: localCert.display_order || 0,
-        created_at: localCert.created_at || new Date(),
-        updated_at: localCert.updated_at || new Date()
+        imageUrl: localCert.image_url,
+        externalUrl: localCert.certificate_url,
+        sortOrder: localCert.display_order || 0,
+        isActive: localCert.is_active !== undefined ? localCert.is_active : true,
+        isDisplayed: true,
+        createdAt: localCert.created_at || new Date(),
+        updatedAt: localCert.updated_at || new Date()
       });
       console.log(`✅ Imported certification: ${localCert.name}`);
     }
