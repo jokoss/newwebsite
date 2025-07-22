@@ -114,7 +114,7 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute adminOnly>
-              <AdminLayout />
+              <AdminLayout setTheme={setThemeMode} />
             </ProtectedRoute>
           }
         >
