@@ -19,6 +19,17 @@ class ErrorBoundary extends Component {
 
   static getDerivedStateFromError(error) {
     // Update state so the next render will show the fallback UI
+    console.error('ErrorBoundary caught error:', error);
+    
+    // Check for specific router context errors
+    if (error.message && (
+      error.message.includes('useContext') ||
+      error.message.includes('basename') ||
+      error.message.includes('Router')
+    )) {
+      console.error('Router context error detected in ErrorBoundary:', error);
+    }
+    
     return { hasError: true, error };
   }
 
@@ -26,6 +37,21 @@ class ErrorBoundary extends Component {
     // Log the error to console
     console.error('Error caught by ErrorBoundary:', error, errorInfo);
     this.setState({ errorInfo });
+    
+    // Special handling for router errors
+    if (error.message && (
+      error.message.includes('useContext') ||
+      error.message.includes('basename') ||
+      error.message.includes('Router')
+    )) {
+      console.error('Router-specific error caught:', {
+        error: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        url: window.location.href,
+        userAgent: navigator.userAgent
+      });
+    }
     
     // You can also log the error to an error reporting service like Sentry here
     // logErrorToService(error, errorInfo);

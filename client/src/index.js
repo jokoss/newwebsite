@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import App from './App';
@@ -21,45 +22,113 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Function to determine if we should use HashRouter or BrowserRouter
-// HashRouter is more reliable in some deployment environments
-const shouldUseHashRouter = () => {
-  // Check if we're in a production environment
-  if (process.env.NODE_ENV === 'production') {
-    // Check if we're on Render or similar platform that might have routing issues
-    if (typeof window !== 'undefined') {
-      const { hostname } = window.location;
-      if (hostname.includes('render.com') || hostname.includes('onrender.com')) {
-        console.log('Using HashRouter for Render deployment');
-        return true;
-      }
+// Router Error Boundary specifically for Router context issues
+class RouterErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    // Check if it's a router context error
+    if (error.message && error.message.includes('useContext')) {
+      console.error('Router context error detected:', error);
+      return { hasError: true, error };
+    }
+    return null;
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('RouterErrorBoundary caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ 
+          padding: '20px', 
+          textAlign: 'center', 
+          fontFamily: 'Arial, sans-serif',
+          backgroundColor: '#f5f5f5',
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <h1 style={{ color: '#d32f2f' }}>Application Loading Error</h1>
+          <p>The application encountered a routing error. Please refresh the page.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#1976d2',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '16px'
+            }}
+          >
+            Refresh Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Determine basename for Railway deployment
+const getBasename = () => {
+  // For Railway, we typically don't need a basename
+  // Railway serves the app from the root domain
+  if (typeof window !== 'undefined') {
+    const { hostname, pathname } = window.location;
+    
+    // Railway domains
+    if (hostname.includes('railway.app') || hostname.includes('up.railway.app')) {
+      console.log('Railway deployment detected - using root basename');
+      return '/';
+    }
+    
+    // Other deployment platforms
+    if (hostname.includes('render.com') || hostname.includes('onrender.com')) {
+      console.log('Render deployment detected - using root basename');
+      return '/';
+    }
+    
+    // Netlify
+    if (hostname.includes('netlify.app')) {
+      console.log('Netlify deployment detected - using root basename');
+      return '/';
     }
   }
-  // Default to BrowserRouter for better URLs
-  return false;
+  
+  // Default to root
+  return '/';
 };
 
-// Dynamically choose the router based on environment
-const RouterComponent = shouldUseHashRouter() ? 
-  require('react-router-dom').HashRouter : 
-  require('react-router-dom').BrowserRouter;
-
-// Log which router we're using
-console.log(`Using ${shouldUseHashRouter() ? 'HashRouter' : 'BrowserRouter'} for routing`);
+const basename = getBasename();
+console.log(`🚀 App starting with basename: "${basename}"`);
+console.log(`🌐 Current URL: ${typeof window !== 'undefined' ? window.location.href : 'SSR'}`);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <RouterComponent>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <AuthProvider>
-            <ScrollToTop />
-            <App />
-          </AuthProvider>
-        </ThemeProvider>
-      </RouterComponent>
-    </ErrorBoundary>
+    <RouterErrorBoundary>
+      <ErrorBoundary>
+        <BrowserRouter basename={basename}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <AuthProvider>
+              <ScrollToTop />
+              <App />
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </ErrorBoundary>
+    </RouterErrorBoundary>
   </React.StrictMode>
 );
