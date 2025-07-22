@@ -35,6 +35,82 @@ import {
   PlayArrow as PlayArrowIcon,
 } from '@mui/icons-material';
 
+// Fallback data moved outside components to prevent infinite loops
+const FALLBACK_SERVICES = [
+  {
+    id: 1,
+    name: 'Biochemical Testing',
+    description: 'Advanced biochemical analysis for research and diagnostic applications with state-of-the-art instrumentation.',
+    imageUrl: '/images/categories/biochemical-testing.jpg',
+  },
+  {
+    id: 2,
+    name: 'Environmental Analysis',
+    description: 'Comprehensive environmental testing for soil, water, and air quality monitoring and compliance.',
+    imageUrl: '/images/categories/environmental-analysis.jpg',
+  },
+  {
+    id: 3,
+    name: 'Material Characterization',
+    description: 'Detailed analysis of material properties and composition for quality control and research.',
+    imageUrl: '/images/categories/material-characterization.jpg',
+  },
+  {
+    id: 4,
+    name: 'Microbiological Testing',
+    description: 'Detection and identification of microorganisms for safety and quality control in various industries.',
+    imageUrl: '/images/categories/microbiological-testing.jpg',
+  },
+  {
+    id: 5,
+    name: 'Food & Beverage Testing',
+    description: 'Quality and safety testing for food and beverage products to ensure regulatory compliance.',
+    imageUrl: '/images/categories/food-testing.jpg',
+  },
+  {
+    id: 6,
+    name: 'Pharmaceutical Analysis',
+    description: 'Testing and validation services for pharmaceutical products and raw materials.',
+    imageUrl: '/images/categories/pharmaceutical-analysis.jpg',
+  },
+  {
+    id: 7,
+    name: 'Toxicology Screening',
+    description: 'Comprehensive toxicology testing services for clinical, forensic, and research applications.',
+    imageUrl: '/images/categories/toxicology-screening.jpg',
+  },
+  {
+    id: 8,
+    name: 'Molecular Diagnostics',
+    description: 'Advanced molecular testing for genetic analysis, disease diagnosis, and research applications.',
+    imageUrl: '/images/categories/molecular-diagnostics.jpg',
+  }
+];
+
+const FALLBACK_TESTIMONIALS = [
+  {
+    name: 'Dr. Sarah Johnson',
+    role: 'Research Director',
+    company: 'BioTech Solutions',
+    quote: 'Outstanding precision and reliability in every test result.',
+    avatar: 'SJ',
+  },
+  {
+    name: 'Michael Chen',
+    role: 'Quality Manager',
+    company: 'PharmaCorp',
+    quote: 'Fast turnaround times without compromising on quality.',
+    avatar: 'MC',
+  },
+  {
+    name: 'Dr. Emily Rodriguez',
+    role: 'Lab Director',
+    company: 'Environmental Labs',
+    quote: 'Their expertise has been invaluable to our research.',
+    avatar: 'ER',
+  },
+];
+
 // Modern, stunning Hero section with gradient backgrounds and animations
 const Hero = () => {
   const theme = useTheme();
@@ -392,14 +468,14 @@ const FeaturedServices = () => {
           setCategories(categoriesData.slice(0, 8));
         } else {
           console.log('No categories found in API response. Using fallback data.');
-          setCategories(fallbackServices);
+          setCategories(FALLBACK_SERVICES);
         }
         
         setError('');
       } catch (err) {
         console.error('Error fetching categories for homepage:', err);
         console.log('Using fallback categories data due to API error');
-        setCategories(fallbackServices);
+        setCategories(FALLBACK_SERVICES);
         setError('');  // Don't show error to user since we're using fallback data
       } finally {
         setLoading(false);
@@ -407,7 +483,7 @@ const FeaturedServices = () => {
     };
 
     fetchCategories();
-  }, [fallbackServices]);
+  }, []); // Empty dependency array - only run once on mount
 
   // Icon mapping for different service types
   const getServiceIcon = (name) => {
@@ -667,19 +743,19 @@ const CtaSection = () => {
           setTestimonials(testimonialsData);
         } else {
           console.log('No testimonials found in API response. Using fallback data.');
-          setTestimonials(fallbackTestimonials);
+          setTestimonials(FALLBACK_TESTIMONIALS);
         }
       } catch (err) {
         console.error('Error fetching testimonials for homepage:', err);
         console.log('Using fallback testimonials data due to API error');
-        setTestimonials(fallbackTestimonials);
+        setTestimonials(FALLBACK_TESTIMONIALS);
       } finally {
         setLoading(false);
       }
     };
 
     fetchTestimonials();
-  }, [fallbackTestimonials]);
+  }, []); // Empty dependency array - only run once on mount
   
   return (
     <Box 
