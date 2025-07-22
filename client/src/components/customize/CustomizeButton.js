@@ -6,142 +6,86 @@ import {
   Typography, 
   Grid, 
   Tooltip, 
-  Fade,
-  useTheme,
-  Paper,
-  Zoom,
-  Badge,
   IconButton,
-  Divider
+  Paper
 } from '@mui/material';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
 import PaletteIcon from '@mui/icons-material/Palette';
 import CheckIcon from '@mui/icons-material/Check';
-import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
-import CloseIcon from '@mui/icons-material/Close';
 
-// Enhanced theme color mapping for the color swatches
+// Simple theme colors - guaranteed to work
 const themeColors = {
-  default: {
-    primary: '#7C321D',
-    secondary: '#A85C2E',
-    background: '#F8FAFC',
-    name: 'Default',
-    description: 'Classic brown theme'
-  },
-  brown: {
-    primary: '#7C321D',
-    secondary: '#A85C2E',
-    background: '#F8FAFC',
-    name: 'Brown',
-    description: 'Warm earthy tones'
-  },
-  dark: {
-    primary: '#7C321D',
-    secondary: '#A85C2E',
-    background: '#111827',
-    name: 'Dark',
-    description: 'Dark mode with brown accents'
-  },
-  black: {
-    primary: '#000000',
-    secondary: '#333333',
-    background: '#F8FAFC',
-    name: 'Black',
-    description: 'Sleek black & white'
-  },
-  lightGreen: {
-    primary: '#A5C882',
-    secondary: '#7D9B63',
-    background: '#F8FAFC',
-    name: 'Light Green',
-    description: 'Fresh & natural'
-  },
-  darkGreen: {
-    primary: '#4A6741',
-    secondary: '#5D7A41',
-    background: '#F8FAFC',
-    name: 'Dark Green',
-    description: 'Deep forest tones'
-  },
-  brownGreen: {
-    primary: '#7C321D',
-    secondary: '#5D7A41',
-    background: '#F8FAFC',
-    name: 'Brown & Green',
-    description: 'Earth & nature blend'
-  },
-  blackGreen: {
-    primary: '#000000',
-    secondary: '#5D7A41',
-    background: '#F8FAFC',
-    name: 'Black & Green',
-    description: 'Modern & natural'
-  }
+  default: { primary: '#7C321D', secondary: '#A85C2E', name: 'Default' },
+  brown: { primary: '#7C321D', secondary: '#A85C2E', name: 'Brown' },
+  dark: { primary: '#7C321D', secondary: '#A85C2E', name: 'Dark' },
+  black: { primary: '#000000', secondary: '#333333', name: 'Black' },
+  lightGreen: { primary: '#A5C882', secondary: '#7D9B63', name: 'Light Green' },
+  darkGreen: { primary: '#4A6741', secondary: '#5D7A41', name: 'Dark Green' },
+  brownGreen: { primary: '#7C321D', secondary: '#5D7A41', name: 'Brown & Green' },
+  blackGreen: { primary: '#000000', secondary: '#5D7A41', name: 'Black & Green' }
 };
 
-const ColorSwatch = ({ color, onClick, isSelected, name }) => {
-  const theme = useTheme();
-  
-  return (
-    <Tooltip 
-      title={
-        <Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{name}</Typography>
-          <Typography variant="caption">{color.description}</Typography>
-        </Box>
-      } 
-      arrow 
-      placement="top"
-      TransitionComponent={Zoom}
-    >
+const CustomizeButton = ({ setTheme }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentTheme, setCurrentTheme] = useState('default');
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🎨 CustomizeButton mounted successfully!');
+    console.log('🎨 setTheme function:', typeof setTheme);
+    
+    // Get saved theme
+    const savedTheme = localStorage.getItem('themeMode') || 'default';
+    setCurrentTheme(savedTheme);
+    console.log('🎨 Current theme:', savedTheme);
+  }, []);
+
+  const handleClick = (event) => {
+    console.log('🎨 Button clicked!');
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    console.log('🎨 Menu closed');
+    setAnchorEl(null);
+  };
+
+  const handleThemeChange = (themeKey) => {
+    console.log('🎨 Theme changing to:', themeKey);
+    try {
+      if (setTheme && typeof setTheme === 'function') {
+        setTheme(themeKey);
+        setCurrentTheme(themeKey);
+        localStorage.setItem('themeMode', themeKey);
+        console.log('🎨 Theme changed successfully!');
+      } else {
+        console.error('🎨 setTheme function not available');
+      }
+    } catch (error) {
+      console.error('🎨 Error changing theme:', error);
+    }
+    handleClose();
+  };
+
+  // Simple color swatch component
+  const ColorSwatch = ({ color, onClick, isSelected, name }) => (
+    <Tooltip title={name} arrow>
       <Paper
         elevation={isSelected ? 4 : 1}
         onClick={onClick}
         sx={{
-          width: '60px',
-          height: '60px',
-          borderRadius: '16px',
+          width: 50,
+          height: 50,
+          borderRadius: 2,
           cursor: 'pointer',
           position: 'relative',
-          overflow: 'hidden',
-          border: isSelected ? `2px solid ${theme.palette.primary.main}` : '2px solid transparent',
-          boxShadow: isSelected ? `0 0 0 2px ${theme.palette.background.paper}, 0 0 0 4px ${theme.palette.primary.main}` : 'none',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          border: isSelected ? '2px solid #7C321D' : '2px solid transparent',
+          transition: 'all 0.2s ease',
           '&:hover': {
-            transform: 'translateY(-5px)',
-            boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+            transform: 'scale(1.1)',
           },
-          background: color.background || '#F8FAFC',
+          background: `linear-gradient(45deg, ${color.primary} 50%, ${color.secondary} 50%)`,
         }}
       >
-        {/* Primary color */}
-        <Box 
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '60%',
-            height: '60%',
-            background: color.primary,
-            borderBottomRightRadius: '12px',
-          }}
-        />
-        
-        {/* Secondary color */}
-        <Box 
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            width: '60%',
-            height: '60%',
-            background: color.secondary,
-            borderTopLeftRadius: '12px',
-          }}
-        />
-        
-        {/* Selected checkmark */}
         {isSelected && (
           <Box 
             sx={{
@@ -149,184 +93,80 @@ const ColorSwatch = ({ color, onClick, isSelected, name }) => {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '24px',
-              height: '24px',
+              width: 20,
+              height: 20,
               borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.9)',
+              background: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
             }}
           >
-            <CheckIcon sx={{ fontSize: '16px', color: theme.palette.primary.main }} />
+            <CheckIcon sx={{ fontSize: 14, color: '#7C321D' }} />
           </Box>
         )}
       </Paper>
     </Tooltip>
   );
-};
 
-const CustomizeButton = ({ setTheme }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [currentTheme, setCurrentTheme] = useState(() => {
-    // Try to get the saved theme from localStorage
-    const savedTheme = localStorage.getItem('themeMode');
-    return savedTheme || 'default';
-  });
-  const theme = useTheme();
-  const [showBadge, setShowBadge] = useState(false);
-
-  // Show badge animation on initial load
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowBadge(true);
-    }, 2000);
-
-    const hideTimer = setTimeout(() => {
-      setShowBadge(false);
-    }, 6000);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(hideTimer);
-    };
-  }, []);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-    setShowBadge(false); // Hide badge when menu is opened
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleThemeChange = (themeKey) => {
-    setTheme(themeKey);
-    setCurrentTheme(themeKey);
-    localStorage.setItem('themeMode', themeKey); // Save to localStorage
-    handleClose();
-  };
+  console.log('🎨 Rendering CustomizeButton...');
 
   return (
     <Box>
-      <Tooltip 
-        title={
-          <Box sx={{ p: 0.5 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Customize Colors</Typography>
-            <Typography variant="caption">Change the website's color theme</Typography>
-          </Box>
-        } 
-        arrow 
-        placement="left"
-      >
-        <Badge
-          color="secondary"
-          variant="dot"
-          invisible={!showBadge}
-          overlap="circular"
+      {/* Debug indicator - visible red dot to confirm component renders */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: -5,
+          right: -5,
+          width: 10,
+          height: 10,
+          borderRadius: '50%',
+          backgroundColor: 'red',
+          zIndex: 10000,
+        }}
+      />
+      
+      <Tooltip title="Customize Colors" arrow placement="left">
+        <IconButton
+          aria-label="customize colors"
+          onClick={handleClick}
           sx={{
-            '& .MuiBadge-badge': {
-              transform: 'scale(1.5)',
-              animation: showBadge ? 'pulse 1.5s infinite' : 'none',
+            width: 60,
+            height: 60,
+            backgroundColor: '#7C321D',
+            color: 'white',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            '&:hover': {
+              backgroundColor: '#5E2516',
+              transform: 'scale(1.1)',
             },
-            '@keyframes pulse': {
-              '0%': { transform: 'scale(1.5)' },
-              '50%': { transform: 'scale(2)' },
-              '100%': { transform: 'scale(1.5)' },
-            }
+            transition: 'all 0.2s ease',
           }}
         >
-          <Paper
-            elevation={4}
-            sx={{
-              borderRadius: '50%',
-              overflow: 'hidden',
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-5px)',
-                boxShadow: '0 8px 25px rgba(0,0,0,0.2)',
-              },
-            }}
-          >
-            <IconButton
-              aria-controls="customize-menu"
-              aria-haspopup="true"
-              onClick={handleClick}
-              size="large"
-              sx={{
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                color: 'white',
-                width: 60,
-                height: 60,
-                '&:hover': {
-                  background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`,
-                },
-              }}
-            >
-              <PaletteIcon fontSize="medium" />
-            </IconButton>
-          </Paper>
-        </Badge>
+          <PaletteIcon />
+        </IconButton>
       </Tooltip>
       
       <Menu
-        id="customize-menu"
         anchorEl={anchorEl}
-        keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        TransitionComponent={Fade}
         PaperProps={{
-          elevation: 6,
           sx: {
-            borderRadius: '24px',
-            padding: '24px',
-            minWidth: '320px',
-            overflow: 'visible',
-            '&:before': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              width: '100%',
-              height: '100%',
-              borderRadius: '24px',
-              background: 'rgba(255, 255, 255, 0.6)',
-              backdropFilter: 'blur(10px)',
-              zIndex: -1,
-            },
+            borderRadius: 3,
+            padding: 2,
+            minWidth: 280,
           }
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <FormatColorFillIcon sx={{ color: theme.palette.primary.main, mr: 1.5 }} />
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Choose Your Theme
-            </Typography>
-          </Box>
-          <IconButton 
-            size="small" 
-            onClick={handleClose}
-            sx={{ 
-              color: 'text.secondary',
-              '&:hover': { 
-                background: 'rgba(0,0,0,0.05)',
-                color: 'text.primary'
-              }
-            }}
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </Box>
+        <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
+          Choose Theme
+        </Typography>
         
-        <Divider sx={{ mb: 3 }} />
-        
-        <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid container spacing={2}>
           {Object.entries(themeColors).map(([key, color]) => (
-            <Grid item xs={6} sm={3} key={key} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid item xs={3} key={key}>
               <ColorSwatch 
                 color={color} 
                 onClick={() => handleThemeChange(key)}
@@ -337,25 +177,8 @@ const CustomizeButton = ({ setTheme }) => {
           ))}
         </Grid>
         
-        <Divider sx={{ mb: 2 }} />
-        
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-            Changes apply instantly to the entire website
-          </Typography>
-          
-          <Button 
-            size="small" 
-            variant="outlined" 
-            onClick={handleClose}
-            sx={{ 
-              borderRadius: '20px',
-              textTransform: 'none',
-              px: 2,
-              py: 0.5,
-              fontSize: '0.75rem'
-            }}
-          >
+        <Box sx={{ mt: 2, textAlign: 'center' }}>
+          <Button size="small" onClick={handleClose}>
             Close
           </Button>
         </Box>

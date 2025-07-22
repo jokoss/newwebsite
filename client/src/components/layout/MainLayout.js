@@ -66,17 +66,21 @@ const MainLayout = ({ setTheme }) => {
           <Outlet />
         </Box>
         
-        {/* Customize Button - Fixed Position */}
+        {/* Customize Button - Fixed Position with Debug */}
         <Box 
           sx={{ 
             position: 'fixed', 
             bottom: { xs: 16, md: 24 }, 
             right: { xs: 16, md: 24 }, 
-            zIndex: 9999,
+            zIndex: 99999,
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'scale(1.05)',
-            }
+            },
+            // Debug background to ensure visibility
+            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            padding: 1,
+            borderRadius: 2,
           }}
         >
           <CustomizeButton setTheme={handleThemeChange} />
