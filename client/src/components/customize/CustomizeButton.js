@@ -21,7 +21,19 @@ const themeColors = {
   lightGreen: { primary: '#A5C882', secondary: '#7D9B63', name: 'Light Green' },
   darkGreen: { primary: '#4A6741', secondary: '#5D7A41', name: 'Dark Green' },
   brownGreen: { primary: '#7C321D', secondary: '#5D7A41', name: 'Brown & Green' },
-  blackGreen: { primary: '#000000', secondary: '#5D7A41', name: 'Black & Green' }
+  blackGreen: { primary: '#000000', secondary: '#5D7A41', name: 'Black & Green' },
+  blue: { primary: '#1976D2', secondary: '#42A5F5', name: 'Blue' },
+  navy: { primary: '#0D47A1', secondary: '#1565C0', name: 'Navy' },
+  teal: { primary: '#00695C', secondary: '#26A69A', name: 'Teal' },
+  purple: { primary: '#7B1FA2', secondary: '#AB47BC', name: 'Purple' },
+  indigo: { primary: '#303F9F', secondary: '#5C6BC0', name: 'Indigo' },
+  orange: { primary: '#F57C00', secondary: '#FF9800', name: 'Orange' },
+  red: { primary: '#C62828', secondary: '#E53935', name: 'Red' },
+  pink: { primary: '#C2185B', secondary: '#E91E63', name: 'Pink' },
+  cyan: { primary: '#00838F', secondary: '#00ACC1', name: 'Cyan' },
+  amber: { primary: '#FF8F00', secondary: '#FFC107', name: 'Amber' },
+  deepOrange: { primary: '#D84315', secondary: '#FF5722', name: 'Deep Orange' },
+  blueGrey: { primary: '#455A64', secondary: '#607D8B', name: 'Blue Grey' }
 };
 
 const CustomizeButton = ({ setTheme }) => {
