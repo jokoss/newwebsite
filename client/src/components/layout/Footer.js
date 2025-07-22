@@ -167,7 +167,7 @@ const Footer = () => {
           sx={{
             p: { xs: 4, sm: 4, md: 5 },
             borderRadius: 4,
-            background: 'linear-gradient(135deg, rgba(11, 77, 131, 0.95) 0%, rgba(0, 163, 180, 0.9) 100%)',
+            background: theme.gradients?.primary || 'linear-gradient(135deg, #7C321D 0%, #A85C2E 100%)',
             boxShadow: theme.customShadows.card,
             position: 'relative',
             overflow: 'hidden',

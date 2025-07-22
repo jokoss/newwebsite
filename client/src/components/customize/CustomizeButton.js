@@ -33,7 +33,15 @@ const themeColors = {
   cyan: { primary: '#00838F', secondary: '#00ACC1', name: 'Cyan' },
   amber: { primary: '#FF8F00', secondary: '#FFC107', name: 'Amber' },
   deepOrange: { primary: '#D84315', secondary: '#FF5722', name: 'Deep Orange' },
-  blueGrey: { primary: '#455A64', secondary: '#607D8B', name: 'Blue Grey' }
+  blueGrey: { primary: '#455A64', secondary: '#607D8B', name: 'Blue Grey' },
+  emerald: { primary: '#047857', secondary: '#10B981', name: 'Emerald' },
+  rose: { primary: '#BE185D', secondary: '#F43F5E', name: 'Rose' },
+  violet: { primary: '#7C3AED', secondary: '#A78BFA', name: 'Violet' },
+  slate: { primary: '#475569', secondary: '#64748B', name: 'Slate' },
+  lime: { primary: '#65A30D', secondary: '#84CC16', name: 'Lime' },
+  coral: { primary: '#DC2626', secondary: '#F87171', name: 'Coral' },
+  mint: { primary: '#059669', secondary: '#34D399', name: 'Mint' },
+  gold: { primary: '#D97706', secondary: '#F59E0B', name: 'Gold' }
 };
 
 const CustomizeButton = ({ setTheme }) => {
@@ -168,7 +176,10 @@ const CustomizeButton = ({ setTheme }) => {
           sx: {
             borderRadius: 3,
             padding: 2,
-            minWidth: 280,
+            minWidth: 320,
+            maxWidth: 400,
+            maxHeight: 500,
+            overflowY: 'auto',
           }
         }}
       >
@@ -176,9 +187,9 @@ const CustomizeButton = ({ setTheme }) => {
           Choose Theme
         </Typography>
         
-        <Grid container spacing={2}>
+        <Grid container spacing={1.5}>
           {Object.entries(themeColors).map(([key, color]) => (
-            <Grid item xs={3} key={key}>
+            <Grid item xs={2.4} key={key}>
               <ColorSwatch 
                 color={color} 
                 onClick={() => handleThemeChange(key)}

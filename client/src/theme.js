@@ -610,6 +610,238 @@ const themes = {
       divider: 'rgba(69, 90, 100, 0.12)',
     },
   },
+  emerald: {
+    palette: {
+      primary: {
+        main: '#047857',
+        light: '#10B981',
+        dark: '#065F46',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#10B981',
+        light: '#34D399',
+        dark: '#047857',
+        contrastText: '#FFFFFF',
+      },
+      background: {
+        default: '#F8FAFC',
+        paper: '#FFFFFF',
+        glass: 'rgba(255, 255, 255, 0.95)',
+        gradient: 'linear-gradient(135deg, #047857 0%, #10B981 100%)',
+        overlay: 'rgba(4, 120, 87, 0.95)',
+      },
+      text: {
+        primary: '#1F2937',
+        secondary: '#6B7280',
+        muted: '#9CA3AF',
+      },
+      divider: 'rgba(4, 120, 87, 0.12)',
+    },
+  },
+  rose: {
+    palette: {
+      primary: {
+        main: '#BE185D',
+        light: '#F43F5E',
+        dark: '#9F1239',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#F43F5E',
+        light: '#FB7185',
+        dark: '#BE185D',
+        contrastText: '#FFFFFF',
+      },
+      background: {
+        default: '#F8FAFC',
+        paper: '#FFFFFF',
+        glass: 'rgba(255, 255, 255, 0.95)',
+        gradient: 'linear-gradient(135deg, #BE185D 0%, #F43F5E 100%)',
+        overlay: 'rgba(190, 24, 93, 0.95)',
+      },
+      text: {
+        primary: '#1F2937',
+        secondary: '#6B7280',
+        muted: '#9CA3AF',
+      },
+      divider: 'rgba(190, 24, 93, 0.12)',
+    },
+  },
+  violet: {
+    palette: {
+      primary: {
+        main: '#7C3AED',
+        light: '#A78BFA',
+        dark: '#5B21B6',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#A78BFA',
+        light: '#C4B5FD',
+        dark: '#7C3AED',
+        contrastText: '#FFFFFF',
+      },
+      background: {
+        default: '#F8FAFC',
+        paper: '#FFFFFF',
+        glass: 'rgba(255, 255, 255, 0.95)',
+        gradient: 'linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%)',
+        overlay: 'rgba(124, 58, 237, 0.95)',
+      },
+      text: {
+        primary: '#1F2937',
+        secondary: '#6B7280',
+        muted: '#9CA3AF',
+      },
+      divider: 'rgba(124, 58, 237, 0.12)',
+    },
+  },
+  slate: {
+    palette: {
+      primary: {
+        main: '#475569',
+        light: '#64748B',
+        dark: '#334155',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#64748B',
+        light: '#94A3B8',
+        dark: '#475569',
+        contrastText: '#FFFFFF',
+      },
+      background: {
+        default: '#F8FAFC',
+        paper: '#FFFFFF',
+        glass: 'rgba(255, 255, 255, 0.95)',
+        gradient: 'linear-gradient(135deg, #475569 0%, #64748B 100%)',
+        overlay: 'rgba(71, 85, 105, 0.95)',
+      },
+      text: {
+        primary: '#1F2937',
+        secondary: '#6B7280',
+        muted: '#9CA3AF',
+      },
+      divider: 'rgba(71, 85, 105, 0.12)',
+    },
+  },
+  lime: {
+    palette: {
+      primary: {
+        main: '#65A30D',
+        light: '#84CC16',
+        dark: '#4D7C0F',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#84CC16',
+        light: '#A3E635',
+        dark: '#65A30D',
+        contrastText: '#000000',
+      },
+      background: {
+        default: '#F8FAFC',
+        paper: '#FFFFFF',
+        glass: 'rgba(255, 255, 255, 0.95)',
+        gradient: 'linear-gradient(135deg, #65A30D 0%, #84CC16 100%)',
+        overlay: 'rgba(101, 163, 13, 0.95)',
+      },
+      text: {
+        primary: '#1F2937',
+        secondary: '#6B7280',
+        muted: '#9CA3AF',
+      },
+      divider: 'rgba(101, 163, 13, 0.12)',
+    },
+  },
+  coral: {
+    palette: {
+      primary: {
+        main: '#DC2626',
+        light: '#F87171',
+        dark: '#B91C1C',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#F87171',
+        light: '#FCA5A5',
+        dark: '#DC2626',
+        contrastText: '#FFFFFF',
+      },
+      background: {
+        default: '#F8FAFC',
+        paper: '#FFFFFF',
+        glass: 'rgba(255, 255, 255, 0.95)',
+        gradient: 'linear-gradient(135deg, #DC2626 0%, #F87171 100%)',
+        overlay: 'rgba(220, 38, 38, 0.95)',
+      },
+      text: {
+        primary: '#1F2937',
+        secondary: '#6B7280',
+        muted: '#9CA3AF',
+      },
+      divider: 'rgba(220, 38, 38, 0.12)',
+    },
+  },
+  mint: {
+    palette: {
+      primary: {
+        main: '#059669',
+        light: '#34D399',
+        dark: '#047857',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#34D399',
+        light: '#6EE7B7',
+        dark: '#059669',
+        contrastText: '#000000',
+      },
+      background: {
+        default: '#F8FAFC',
+        paper: '#FFFFFF',
+        glass: 'rgba(255, 255, 255, 0.95)',
+        gradient: 'linear-gradient(135deg, #059669 0%, #34D399 100%)',
+        overlay: 'rgba(5, 150, 105, 0.95)',
+      },
+      text: {
+        primary: '#1F2937',
+        secondary: '#6B7280',
+        muted: '#9CA3AF',
+      },
+      divider: 'rgba(5, 150, 105, 0.12)',
+    },
+  },
+  gold: {
+    palette: {
+      primary: {
+        main: '#D97706',
+        light: '#F59E0B',
+        dark: '#B45309',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#F59E0B',
+        light: '#FCD34D',
+        dark: '#D97706',
+        contrastText: '#000000',
+      },
+      background: {
+        default: '#F8FAFC',
+        paper: '#FFFFFF',
+        glass: 'rgba(255, 255, 255, 0.95)',
+        gradient: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
+        overlay: 'rgba(217, 119, 6, 0.95)',
+      },
+      text: {
+        primary: '#1F2937',
+        secondary: '#6B7280',
+        muted: '#9CA3AF',
+      },
+      divider: 'rgba(217, 119, 6, 0.12)',
+    },
+  },
 };
 
 const baseTheme = {
