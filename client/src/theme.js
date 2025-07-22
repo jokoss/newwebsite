@@ -309,6 +309,16 @@ const baseTheme = {
   shape: {
     borderRadius: 8,
   },
+  // Add gradients that components expect
+  gradients: {
+    primary: 'linear-gradient(135deg, #7C321D 0%, #A85C2E 100%)',
+    secondary: 'linear-gradient(135deg, #A85C2E 0%, #C27A4C 100%)',
+    footer: 'linear-gradient(135deg, #7C321D 0%, #A85C2E 100%)',
+  },
+  // Add custom shadows that components expect
+  customShadows: {
+    card: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  },
   components: {
     MuiButton: {
       styleOverrides: {

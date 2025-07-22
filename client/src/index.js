@@ -1,13 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import App from './App';
-import theme from './theme';
 import { AuthProvider } from './context/AuthContext';
 import ScrollToTop from './components/utils/ScrollToTop';
 import ErrorBoundary from './components/utils/ErrorBoundary';
+import App from './App';
 
 // Initialize error tracking as early as possible
 if (typeof window !== 'undefined') {
@@ -120,13 +117,10 @@ root.render(
     <RouterErrorBoundary>
       <ErrorBoundary>
         <BrowserRouter basename={basename}>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <AuthProvider>
-              <ScrollToTop />
-              <App />
-            </AuthProvider>
-          </ThemeProvider>
+          <AuthProvider>
+            <ScrollToTop />
+            <App />
+          </AuthProvider>
         </BrowserRouter>
       </ErrorBoundary>
     </RouterErrorBoundary>
