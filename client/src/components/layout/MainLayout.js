@@ -72,7 +72,7 @@ const MainLayout = ({ setTheme }) => {
             position: 'fixed', 
             bottom: { xs: 16, md: 24 }, 
             right: { xs: 16, md: 24 }, 
-            zIndex: 1300,
+            zIndex: 9999,
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'scale(1.05)',
