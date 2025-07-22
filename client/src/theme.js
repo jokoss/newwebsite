@@ -344,9 +344,19 @@ const baseTheme = {
 export const createAppTheme = (themeName = 'default') => {
   const selectedTheme = themes[themeName] || themes.default;
   
+  // Ensure gradients are always available based on the selected theme
+  const themeGradients = {
+    primary: selectedTheme.palette?.background?.gradient || baseTheme.gradients.primary,
+    secondary: baseTheme.gradients.secondary,
+    footer: selectedTheme.palette?.background?.gradient || baseTheme.gradients.footer,
+  };
+  
   const theme = createTheme({
     ...baseTheme,
     ...selectedTheme,
+    // Ensure these custom properties are always present
+    gradients: themeGradients,
+    customShadows: baseTheme.customShadows,
   });
 
   return responsiveFontSizes(theme);

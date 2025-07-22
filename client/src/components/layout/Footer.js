@@ -14,6 +14,28 @@ import {
   Button,
   Paper
 } from '@mui/material';
+
+// Fallback theme values to prevent crashes
+const fallbackTheme = {
+  gradients: {
+    footer: 'linear-gradient(135deg, #7C321D 0%, #A85C2E 100%)',
+    primary: 'linear-gradient(135deg, #7C321D 0%, #A85C2E 100%)',
+    secondary: 'linear-gradient(135deg, #A85C2E 0%, #C27A4C 100%)',
+  },
+  customShadows: {
+    card: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  },
+  palette: {
+    primary: {
+      light: '#A85C2E',
+      main: '#7C321D',
+      dark: '#5E2516'
+    },
+    secondary: {
+      main: '#A85C2E'
+    }
+  }
+};
 import {
   Facebook,
   Twitter,
@@ -28,7 +50,23 @@ import {
 } from '@mui/icons-material';
 
 const Footer = () => {
-  const theme = useTheme();
+  let theme;
+  try {
+    theme = useTheme();
+    // Ensure theme has required properties, merge with fallback if needed
+    if (!theme || !theme.gradients || !theme.customShadows) {
+      console.warn('Theme missing required properties, using fallback');
+      theme = {
+        ...theme,
+        gradients: theme?.gradients || fallbackTheme.gradients,
+        customShadows: theme?.customShadows || fallbackTheme.customShadows,
+        palette: theme?.palette || fallbackTheme.palette
+      };
+    }
+  } catch (error) {
+    console.error('Error accessing theme, using fallback:', error);
+    theme = fallbackTheme;
+  }
   const currentYear = new Date().getFullYear();
   const [certifications, setCertifications] = useState([]);
 

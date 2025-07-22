@@ -12,7 +12,7 @@ import {
 import PaletteIcon from '@mui/icons-material/Palette';
 import CheckIcon from '@mui/icons-material/Check';
 
-// Simple theme colors - guaranteed to work
+// Simple theme colors - guaranteed to work without theme context
 const themeColors = {
   default: { primary: '#7C321D', secondary: '#A85C2E', name: 'Default' },
   brown: { primary: '#7C321D', secondary: '#A85C2E', name: 'Brown' },
@@ -66,7 +66,7 @@ const CustomizeButton = ({ setTheme }) => {
     handleClose();
   };
 
-  // Simple color swatch component
+  // Simple color swatch component - no theme dependencies
   const ColorSwatch = ({ color, onClick, isSelected, name }) => (
     <Tooltip title={name} arrow>
       <Paper
