@@ -11,13 +11,16 @@ const MainLayout = ({ setTheme }) => {
   const [themeName, setThemeName] = useState('');
   const [pageTransition, setPageTransition] = useState(false);
   
-  // Enable page transition effect on mount
+  // Debug logging for MainLayout
   useEffect(() => {
+    console.log('🏠 MainLayout mounted successfully!');
     setPageTransition(true);
   }, []);
   
   // Function to handle theme change with notification
   const handleThemeChange = (newTheme) => {
+    console.log('🏠 MainLayout: Theme change requested:', newTheme);
+    
     // Get theme name from the theme key
     const themeNames = {
       default: 'Default',
@@ -50,7 +53,7 @@ const MainLayout = ({ setTheme }) => {
           background: theme.palette.background.default,
           transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
           position: 'relative',
-          overflow: 'hidden',
+          overflow: 'visible', // CRITICAL FIX: Changed from 'hidden' to 'visible'
         }}
       >
         <Header />
@@ -61,26 +64,33 @@ const MainLayout = ({ setTheme }) => {
             paddingTop: '88px', // Header height + some padding
             minHeight: 'calc(100vh - 88px)',
             transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            overflow: 'visible', // Ensure main content doesn't clip button
           }}
         >
           <Outlet />
         </Box>
         
-        {/* Customize Button - Fixed Position with Debug */}
+        {/* Customize Button - Fixed Position with Maximum Visibility */}
         <Box 
           sx={{ 
-            position: 'fixed', 
+            position: 'fixed !important', 
             bottom: { xs: 16, md: 24 }, 
             right: { xs: 16, md: 24 }, 
-            zIndex: 99999,
+            zIndex: '999999 !important', // CRITICAL: Maximum z-index with !important
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'scale(1.05)',
             },
-            // Debug background to ensure visibility
-            backgroundColor: 'rgba(255, 0, 0, 0.1)',
-            padding: 1,
-            borderRadius: 2,
+            // Debug background to ensure visibility - more prominent
+            backgroundColor: 'rgba(255, 0, 0, 0.3) !important',
+            padding: '8px !important',
+            borderRadius: '8px !important',
+            border: '2px solid red !important', // Debug border
+            minWidth: '60px !important',
+            minHeight: '60px !important',
+            display: 'flex !important',
+            alignItems: 'center !important',
+            justifyContent: 'center !important',
           }}
         >
           <CustomizeButton setTheme={handleThemeChange} />
